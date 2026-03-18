@@ -56,7 +56,7 @@
     "keywords": "Bitcoin, Blockchain, Kryptowährung, Mining, Lightning Network, Wallet, Bitcoin Schweiz, Satoshi Nakamoto"
   }
   </script>
-  <script defer src="https://cloud.umami.is/script.js" data-website-id="6fd03527-4912-49b0-861e-1fe1656913af"></script>
+  <!-- Analytics: wird dynamisch geladen falls SITE_CONFIG.umamiId gesetzt ist -->
   <style>
     /* ========== RESET & BASE ========== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -2044,7 +2044,7 @@
     <span style="margin:0 8px">·</span>
     <a href="#" onclick="event.preventDefault();navigateTo('impressum')" style="color:var(--text);text-decoration:none">Impressum</a>
     <span style="margin:0 8px">·</span>
-    <span>© 2026 btc-klar.ch</span>
+    <span id="cfgFooterCopy">© 2026</span>
   </div>
 </div>
 
@@ -6691,7 +6691,7 @@ Bitcoin-Adresse (z.B. 1A1zP1...)</div>
     <div class="relai-promo-card animate-in" onclick="copyPromoCode()">
       <div class="promo-badge">SPARE GEBÜHREN</div>
       <div class="promo-code-display">
-        <span class="promo-code-text" id="promoCodeText">BITSOLUTIONS</span>
+        <span class="promo-code-text" id="promoCodeText"></span>
         <span class="promo-copy-hint" id="promoCopyHint">antippen zum kopieren</span>
       </div>
       <div class="promo-savings">10% Rabatt auf die Servicegebühren!</div>
@@ -6747,7 +6747,7 @@ Bitcoin-Adresse (z.B. 1A1zP1...)</div>
       </div>
       <div class="relai-step">
         <div class="relai-step-num">2</div>
-        <div class="relai-step-text"><strong>Promo-Code eingeben</strong><br>Code <span class="gold" style="font-weight:700">BITSOLUTIONS</span> bei Registrierung</div>
+        <div class="relai-step-text"><strong>Promo-Code eingeben</strong><br>Code <span class="gold" style="font-weight:700" id="promoCodeInline"></span> bei Registrierung</div>
       </div>
       <div class="relai-step">
         <div class="relai-step-num">3</div>
@@ -10927,7 +10927,7 @@ Bitcoin-Adresse (z.B. 1A1zP1...)</div>
     <div class="card animate-in" style="margin-bottom:16px;background:linear-gradient(135deg,rgba(247,183,49,0.08),rgba(247,183,49,0.02));border:1px solid rgba(247,183,49,0.15)">
       <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7;text-align:center">
         <strong style="color:var(--gold)">Fragen oder Feedback?</strong><br>
-        Schreibe an <a href="mailto:info@btc-klar.ch" style="color:var(--gold)">info@btc-klar.ch</a>
+        Schreibe an <a id="cfgEmailLink" href="" style="color:var(--gold)"></a>
       </p>
     </div>
   </div>
@@ -10975,9 +10975,9 @@ Bitcoin-Adresse (z.B. 1A1zP1...)</div>
     <div class="card" style="margin-bottom:16px">
       <div class="card-title" style="color:var(--gold)">Betreiber der Website</div>
       <table style="width:100%;color:var(--text);font-size:var(--text-sm);line-height:1.8">
-        <tr><td style="color:var(--text-muted);padding-right:16px;white-space:nowrap">Name</td><td>Marc Bühler</td></tr>
-        <tr><td style="color:var(--text-muted);padding-right:16px;white-space:nowrap">Website</td><td><a href="https://btc-klar.ch" style="color:var(--gold)">btc-klar.ch</a></td></tr>
-        <tr><td style="color:var(--text-muted);padding-right:16px;white-space:nowrap">E-Mail</td><td><a href="mailto:info@btc-klar.ch" style="color:var(--gold)">info@btc-klar.ch</a></td></tr>
+        <tr><td style="color:var(--text-muted);padding-right:16px;white-space:nowrap">Name</td><td id="cfgOwnerName"></td></tr>
+        <tr><td style="color:var(--text-muted);padding-right:16px;white-space:nowrap">Website</td><td><a id="cfgDomainLink" href="" style="color:var(--gold)"></a></td></tr>
+        <tr><td style="color:var(--text-muted);padding-right:16px;white-space:nowrap">E-Mail</td><td><a id="cfgEmailLink2" href="" style="color:var(--gold)"></a></td></tr>
       </table>
     </div>
 
@@ -10985,7 +10985,7 @@ Bitcoin-Adresse (z.B. 1A1zP1...)</div>
       <div class="card-title" style="color:var(--gold)">Hersteller der App</div>
       <table style="width:100%;color:var(--text);font-size:var(--text-sm);line-height:1.8">
         <tr><td style="color:var(--text-muted);padding-right:16px;white-space:nowrap">Firma</td><td><strong>BITS — Bühler IT Solutions GmbH</strong></td></tr>
-        <tr><td style="color:var(--text-muted);padding-right:16px;white-space:nowrap">Inhaber</td><td>Marc Bühler</td></tr>
+        <tr><td style="color:var(--text-muted);padding-right:16px;white-space:nowrap">Inhaber</td><td id="cfgOwnerName2"></td></tr>
         <tr><td style="color:var(--text-muted);padding-right:16px;white-space:nowrap">Web</td><td><a href="https://bit-solutions.gmbh/" target="_blank" rel="noopener" style="color:var(--gold)">bit-solutions.gmbh</a></td></tr>
         <tr><td style="color:var(--text-muted);padding-right:16px;white-space:nowrap">LinkedIn</td><td><a href="https://www.linkedin.com/company/93102615/" target="_blank" rel="noopener" style="color:var(--gold)">BITS — Bühler IT Solutions</a></td></tr>
       </table>
@@ -11081,11 +11081,12 @@ Bitcoin-Adresse (z.B. 1A1zP1...)</div>
         Diese App ist kostenlos, werbefrei und Open Source. Wenn sie dir gefällt, freue ich mich über eine kleine Spende — jeder Satoshi zählt.
       </p>
       <div id="donationAddress" style="margin-bottom:16px">
+        <!-- noscript-Fallback: Adresse auch in SITE_CONFIG.donationAddr ändern! -->
         <noscript>bc1qvhqvaf3kppfntq0e949ktfkepkgt6sxm33adwh</noscript>
       </div>
       <div id="donationIntegrityError" style="display:none;background:rgba(239,71,111,0.15);border:1px solid var(--red);border-radius:var(--radius-sm);padding:12px;margin-bottom:12px">
         <p style="color:var(--red);font-size:var(--text-sm);font-weight:700">⚠ Integritäts-Warnung</p>
-        <p style="color:var(--red);font-size:var(--text-xs)">Die Wallet-Adresse konnte nicht verifiziert werden. Bitte nutze die Adresse NICHT. Kontaktiere info@btc-klar.ch.</p>
+        <p style="color:var(--red);font-size:var(--text-xs)">Die Wallet-Adresse konnte nicht verifiziert werden. Bitte nutze die Adresse NICHT. Kontaktiere den Betreiber.</p>
       </div>
       <p style="color:var(--muted);font-size:var(--text-xs);margin-top:8px">
         100% der Spenden gehen an den Entwickler. Danke! 🙏
@@ -11146,11 +11147,73 @@ Bitcoin-Adresse (z.B. 1A1zP1...)</div>
 <!-- ===== JAVASCRIPT ===== -->
 <script>
 // ╔══════════════════════════════════════════╗
+// ║  SITE CONFIG — Hier anpassen!           ║
+// ║  Alle persönlichen Werte an einer       ║
+// ║  zentralen Stelle konfigurierbar.       ║
+// ╚══════════════════════════════════════════╝
+
+var SITE_CONFIG = {
+  // Domain & Branding
+  domain:       'btc-klar.ch',
+  siteName:     'Satoshi — Bitcoin Verstehen',
+  ownerName:    'Marc Bühler',
+  companyName:  'BIT Solutions',
+  email:        'info@btc-klar.ch',
+
+  // Analytics (Umami — leer lassen zum Deaktivieren)
+  umamiId:      '6fd03527-4912-49b0-861e-1fe1656913af',
+  umamiUrl:     'https://cloud.umami.is/script.js',
+
+  // Spenden (Bitcoin-Adresse + SHA-256-Hash zur Integritätsprüfung)
+  donationAddr: 'bc1qvhqvaf3kppfntq0e949ktfkepkgt6sxm33adwh',
+  donationHash: '2616bbdf7d55be40290c1579d39c277b5192a23fe0f632e55fffc3918173bb1b',
+
+  // Relai Promo-Code (leer lassen zum Ausblenden)
+  promoCode:    'BITSOLUTIONS'
+};
+
+// Umami Analytics dynamisch laden
+if (SITE_CONFIG.umamiId && SITE_CONFIG.umamiUrl) {
+  var _umamiScript = document.createElement('script');
+  _umamiScript.defer = true;
+  _umamiScript.src = SITE_CONFIG.umamiUrl;
+  _umamiScript.dataset.websiteId = SITE_CONFIG.umamiId;
+  document.head.appendChild(_umamiScript);
+}
+
+// SITE_CONFIG → DOM Hydration (wird bei DOMContentLoaded aufgerufen)
+function hydrateSiteConfig() {
+  var c = SITE_CONFIG;
+  // Email-Links
+  var emailLinks = ['cfgEmailLink', 'cfgEmailLink2'];
+  emailLinks.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) { el.href = 'mailto:' + c.email; el.textContent = c.email; }
+  });
+  // Owner name
+  ['cfgOwnerName', 'cfgOwnerName2'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = c.ownerName;
+  });
+  // Domain link
+  var dl = document.getElementById('cfgDomainLink');
+  if (dl) { dl.href = 'https://' + c.domain; dl.textContent = c.domain; }
+  // Promo code
+  var pc = document.getElementById('promoCodeText');
+  if (pc) pc.textContent = c.promoCode;
+  var pci = document.getElementById('promoCodeInline');
+  if (pci) pci.textContent = c.promoCode;
+  // Footer copyright
+  var fc = document.getElementById('cfgFooterCopy');
+  if (fc) fc.textContent = '© ' + new Date().getFullYear() + ' ' + c.domain;
+}
+
+// ╔══════════════════════════════════════════╗
 // ║  VERSION & CHANGELOG                     ║
 // ╚══════════════════════════════════════════╝
 
 const APP_VERSION = '3.0.0';
-const APP_BUILD = '2026-03-17';
+const APP_BUILD = '2026-03-18';
 
 const CHANGELOG = [
   {
@@ -11999,7 +12062,7 @@ function closeSubnav() {
 
 // --- Promo Code Copy ---
 function copyPromoCode() {
-  navigator.clipboard.writeText('BITSOLUTIONS').then(function() {
+  navigator.clipboard.writeText(SITE_CONFIG.promoCode).then(function() {
     var hint = document.getElementById('promoCopyHint');
     hint.textContent = 'kopiert!';
     hint.classList.add('copied');
@@ -12011,7 +12074,7 @@ function copyPromoCode() {
   }).catch(function() {
     // Fallback for older browsers
     var ta = document.createElement('textarea');
-    ta.value = 'BITSOLUTIONS';
+    ta.value = SITE_CONFIG.promoCode;
     document.body.appendChild(ta);
     ta.select();
     document.execCommand('copy');
@@ -15224,10 +15287,13 @@ function resetAccordionOnNavigate(key) {
   // Check time-based secret on load
   checkTimeSecret();
 
+  // Hydrate SITE_CONFIG → DOM
+  hydrateSiteConfig();
+
   // Donation address integrity verification
   (function() {
-    var DONATION_ADDR = 'bc1qvhqvaf3kppfntq0e949ktfkepkgt6sxm33adwh';
-    var EXPECTED_HASH = '2616bbdf7d55be40290c1579d39c277b5192a23fe0f632e55fffc3918173bb1b';
+    var DONATION_ADDR = SITE_CONFIG.donationAddr;
+    var EXPECTED_HASH = SITE_CONFIG.donationHash;
     Object.freeze(DONATION_ADDR);
 
     var container = document.getElementById('donationAddress');

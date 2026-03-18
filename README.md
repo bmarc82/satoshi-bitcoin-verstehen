@@ -139,12 +139,34 @@ Detaillierte Anleitungen: **[docs/TECHNISCHE-DOKUMENTATION.md](docs/TECHNISCHE-D
 
 ### Konfiguration anpassen
 
-Nach dem Klonen solltest du folgende Werte anpassen:
+Alle persönlichen Werte sind zentral in **`SITE_CONFIG`** am Anfang des `<script>`-Blocks in `index.html` konfigurierbar:
 
-1. **Analytics** — Umami `data-website-id` in `index.html` (Zeile 59) ändern oder entfernen
-2. **Domain** — `btc-klar.ch` in `nginx.conf`, `sitemap.xml`, `robots.txt` und den Meta-Tags ersetzen
-3. **Donation Address** — BTC-Adresse im Impressum anpassen
-4. **Relai Promo-Code** — `BITSOLUTIONS` in der Relai-Sektion anpassen oder entfernen
+```javascript
+var SITE_CONFIG = {
+  domain:       'deine-domain.ch',
+  siteName:     'Dein App-Name',
+  ownerName:    'Dein Name',
+  companyName:  'Deine Firma',
+  email:        'info@deine-domain.ch',
+  umamiId:      '',                    // leer = kein Analytics
+  umamiUrl:     'https://cloud.umami.is/script.js',
+  donationAddr: 'bc1q...',             // deine BTC-Adresse
+  donationHash: '...',                 // SHA-256 Hash der Adresse
+  promoCode:    'DEIN_CODE'            // oder leer lassen
+};
+```
+
+Zusätzlich manuell anpassen:
+- **`nginx.conf`** — Domain, SSL-Pfade, Log-Pfade
+- **`sitemap.xml`** / **`robots.txt`** — Domain ersetzen
+- **Meta-Tags** im `<head>` — `canonical`, `og:url`, `og:image`, `twitter:image`
+- **`<noscript>`-Block** im Donation-Widget — BTC-Adresse
+- **Impressum** — Firma, LinkedIn-Link
+
+**Donation-Hash generieren** (für Integritätsprüfung):
+```bash
+echo -n "bc1q..." | shasum -a 256
+```
 
 ---
 
