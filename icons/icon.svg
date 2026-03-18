@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="256" fill="#080C10"/>
+  <!-- Gold border ring -->
+  <circle cx="256" cy="256" r="230" fill="none" stroke="#F7B731" stroke-width="12"/>
+  <!-- Inner subtle ring -->
+  <circle cx="256" cy="256" r="200" fill="none" stroke="#F7B731" stroke-width="2" opacity="0.3"/>
+  <!-- Bitcoin ₿ symbol -->
+  <g fill="#F7B731">
+    <!-- Vertical bars through B -->
+    <rect x="222" y="110" width="16" height="292" rx="8"/>
+    <rect x="274" y="110" width="16" height="292" rx="8"/>
+    <!-- Upper bowl of B -->
+    <path d="
+      M200 160
+      h80
+      c44 0 68 20 68 52
+      s-24 52-68 52
+      h-80
+      z
+    " fill="none" stroke="#F7B731" stroke-width="20" stroke-linejoin="round"/>
+    <!-- Lower bowl of B (wider) -->
+    <path d="
+      M200 256
+      h90
+      c48 0 76 22 76 56
+      s-28 56-76 56
+      h-90
+      z
+    " fill="none" stroke="#F7B731" stroke-width="20" stroke-linejoin="round"/>
+  </g>
+</svg>

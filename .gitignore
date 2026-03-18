@@ -1,0 +1,39 @@
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Dev notes & drafts (not part of the app)
+*.draft.md
+Wissen.md
+Wissen_2.md
+Kurs_Module.md
+Social_Media_Posts.md
+Satoshi-Projektbeschreibung_2.md
+Audible.md
+Blogs.txt
+PUBLISH.md
+bitcoin_byzantinisches_problem.md
+bitcoin_funfacts.md
+bitcoin_mythen.md
+bitcoin_vs_fiat.md
+cbdc.md
+satoshi_nakamoto.md
+literatur.md
+
+# Deployment docs (server-specific)
+DEPLOY-NGINX.md
+
+# Empty directories
+assets/
+
+# Node (falls jemand npx serve nutzt)
+node_modules/
+package-lock.json

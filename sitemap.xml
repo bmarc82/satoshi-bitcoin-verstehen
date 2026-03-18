@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://btc-klar.ch/</loc>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <!-- Module: Grundlagen -->
+  <url><loc>https://btc-klar.ch/#geld</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://btc-klar.ch/#inflation</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://btc-klar.ch/#oekonomie</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://btc-klar.ch/#analogien</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://btc-klar.ch/#kaufen</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://btc-klar.ch/#dos</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://btc-klar.ch/#relai</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://btc-klar.ch/#alltag</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <!-- Module: Wissen -->
+  <url><loc>https://btc-klar.ch/#satoshi</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://btc-klar.ch/#blockchain</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://btc-klar.ch/#whitepaper</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://btc-klar.ch/#mining</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://btc-klar.ch/#nodes</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://btc-klar.ch/#lightning</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://btc-klar.ch/#krypto</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://btc-klar.ch/#chronologie</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <!-- Module: Markt & Daten -->
+  <url><loc>https://btc-klar.ch/#schweiz</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://btc-klar.ch/#weltweit</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://btc-klar.ch/#sicherheit</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://btc-klar.ch/#regulierung</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://btc-klar.ch/#institutionen</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://btc-klar.ch/#zyklen</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://btc-klar.ch/#feargreed</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://btc-klar.ch/#netzwerk</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://btc-klar.ch/#onchain</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <!-- Module: Experte -->
+  <url><loc>https://btc-klar.ch/#vergleich</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://btc-klar.ch/#energie</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://btc-klar.ch/#layer2</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://btc-klar.ch/#entwicklung</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://btc-klar.ch/#cbdc</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <!-- Module: Mehr -->
+  <url><loc>https://btc-klar.ch/#lexikon</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://btc-klar.ch/#literatur</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://btc-klar.ch/#medien</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://btc-klar.ch/#kultur</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://btc-klar.ch/#psychologie</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://btc-klar.ch/#news</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://btc-klar.ch/#rechner</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://btc-klar.ch/#stacking</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <!-- System -->
+  <url><loc>https://btc-klar.ch/#impressum</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+</urlset>

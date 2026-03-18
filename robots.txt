@@ -1,0 +1,6 @@
+# Satoshi — Bitcoin Verstehen (btc-klar.ch)
+User-agent: *
+Allow: /
+Disallow: /sw.js
+
+Sitemap: https://btc-klar.ch/sitemap.xml
