@@ -2,7 +2,7 @@
  *  Cache-first for app shell, network-first for API data
  */
 
-const SHELL_CACHE = 'satoshi-v18';
+const SHELL_CACHE = 'satoshi-v19';
 const API_CACHE   = 'satoshi-api-v1';
 const API_TTL     = 5 * 60 * 1000; // 5 minutes
 
