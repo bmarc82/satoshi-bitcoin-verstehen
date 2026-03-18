@@ -62,7 +62,7 @@ Satoshi ist eine umfassende Bitcoin-Bildungs-App, die als Single-Page PWA komple
 
 ```bash
 # Repository klonen
-git clone https://github.com/[username]/satoshi-bitcoin-verstehen.git
+git clone https://github.com/bmarc82/satoshi-bitcoin-verstehen.git
 cd satoshi-bitcoin-verstehen
 
 # Lokalen Server starten (eine der Optionen)

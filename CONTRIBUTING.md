@@ -11,7 +11,7 @@ Danke für dein Interesse! Hier erfährst du, wie du zum Projekt beitragen kanns
 ## Projekt lokal einrichten
 
 ```bash
-git clone https://github.com/[username]/satoshi-bitcoin-verstehen.git
+git clone https://github.com/bmarc82/satoshi-bitcoin-verstehen.git
 cd satoshi-bitcoin-verstehen
 npx serve .
 ```
