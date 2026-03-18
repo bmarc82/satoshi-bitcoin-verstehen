@@ -6228,11 +6228,92 @@ Bitcoin-Adresse (z.B. 1A1zP1...)</div>
     </div>
   </div>
   <div class="section">
-    <div class="section-title">Cypherpunk-Manifesto</div>
-    <div class="quote">
-      <p>«Privacy is necessary for an open society in the electronic age. We cannot expect governments, corporations, or other large, faceless organizations to grant us privacy. We must defend our own privacy with cryptography.»</p>
+    <div class="section-title">Wer sind die Cypherpunks?</div>
+    <div class="card animate-in" style="margin-bottom:12px">
+      <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7;margin-bottom:12px">Die <strong style="color:var(--gold)">Cypherpunks</strong> sind eine lose Bewegung von Kryptographen, Programmierern und Aktivisten, die seit Ende der 1980er Jahre für <strong>Privatsphäre durch Technologie</strong> kämpfen. Ihr Name verbindet «cipher» (Verschlüsselung) mit «punk» (Gegenkultur).</p>
+      <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7;margin-bottom:12px">1992 gründeten <strong>Eric Hughes</strong>, <strong>Timothy C. May</strong> und <strong>John Gilmore</strong> die <strong>Cypherpunk-Mailingliste</strong> — ein Forum, in dem über 1'400 Mitglieder Ideen zu Kryptographie, digitalem Geld und Privatsphäre austauschten. Unter ihnen: Julian Assange, Hal Finney, Nick Szabo, Adam Back und Wei Dai.</p>
+      <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7">Ihre Kernüberzeugung: <strong>Privatsphäre ist kein Privileg, sondern ein Grundrecht.</strong> Und dieses Recht kann nicht erbeten werden — es muss durch Code erzwungen werden. Ohne die Cypherpunks gäbe es kein PGP, kein Tor, kein Signal — und <strong>kein Bitcoin</strong>.</p>
+    </div>
+
+    <div class="table-wrap animate-in" style="margin-bottom:12px">
+      <table>
+        <thead><tr><th>Jahr</th><th>Meilenstein</th></tr></thead>
+        <tbody>
+          <tr><td>1985</td><td>David Chaum veröffentlicht Paper über anonyme Zahlungssysteme</td></tr>
+          <tr><td>1988</td><td>Timothy C. May schreibt das <em>Crypto Anarchist Manifesto</em></td></tr>
+          <tr><td>1991</td><td>Phil Zimmermann veröffentlicht PGP — FBI ermittelt 3 Jahre</td></tr>
+          <tr><td>1992</td><td>Gründung der Cypherpunk-Mailingliste (Hughes, May, Gilmore)</td></tr>
+          <tr><td>1993</td><td>Eric Hughes verfasst <em>A Cypherpunk's Manifesto</em></td></tr>
+          <tr><td>1997</td><td>Adam Back erfindet Hashcash (Proof-of-Work)</td></tr>
+          <tr><td>1998</td><td>Wei Dai publiziert b-money, Nick Szabo entwirft Bit Gold</td></tr>
+          <tr><td>2004</td><td>Hal Finney entwickelt RPOW (Reusable Proofs of Work)</td></tr>
+          <tr><td>2008</td><td>Satoshi Nakamoto veröffentlicht das Bitcoin-Whitepaper</td></tr>
+          <tr><td>2009</td><td>Bitcoin-Netzwerk startet — die Vision der Cypherpunks wird Realität</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">A Cypherpunk's Manifesto</div>
+    <p style="color:var(--muted);font-size:var(--text-xs);margin-bottom:12px">Eric Hughes · 9. März 1993 · Das Gründungsdokument der Cypherpunk-Bewegung</p>
+
+    <div class="quote" style="margin-bottom:12px">
+      <p>«Privacy is necessary for an open society in the electronic age. Privacy is not secrecy. A private matter is something one doesn't want the whole world to know, but a secret matter is something one doesn't want anybody to know. Privacy is the power to selectively reveal oneself to the world.»</p>
+    </div>
+
+    <div class="card animate-in" onclick="this.classList.toggle('revealed')" style="cursor:pointer;margin-bottom:8px">
+      <span class="fact-number">📜</span>
+      <span class="fact-label">Über anonyme Transaktionssysteme</span>
+      <div class="reveal-hint">Antippen für Originaltext</div>
+      <div class="reveal-content">
+        <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7;font-style:italic;margin-bottom:8px">«Since we desire privacy, we must ensure that each party to a transaction have knowledge only of that which is directly necessary for that transaction. Since any information can be spoken of, we must ensure that we reveal as little as possible.»</p>
+        <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7;font-style:italic">«When I purchase a magazine at a store and hand cash to the clerk, there is no need to know who I am. When I ask my electronic mail provider to send and receive messages, my provider need not know to whom I am speaking or what I am saying.»</p>
+        <p style="color:var(--gold);font-size:var(--text-xs);margin-top:8px">→ Genau das leistet Bitcoin: Transaktionen ohne persönliche Identität — wie digitales Bargeld.</p>
+      </div>
+    </div>
+
+    <div class="card animate-in" onclick="this.classList.toggle('revealed')" style="cursor:pointer;margin-bottom:8px">
+      <span class="fact-number">🔐</span>
+      <span class="fact-label">Über die Notwendigkeit von Kryptographie</span>
+      <div class="reveal-hint">Antippen für Originaltext</div>
+      <div class="reveal-content">
+        <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7;font-style:italic;margin-bottom:8px">«We cannot expect governments, corporations, or other large, faceless organizations to grant us privacy out of their beneficence. It is to their advantage to speak of us, and we should expect that they will speak.»</p>
+        <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7;font-style:italic">«We must defend our own privacy if we expect to have any. We must come together and create systems which allow anonymous transactions to take place.»</p>
+        <p style="color:var(--gold);font-size:var(--text-xs);margin-top:8px">→ 30 Jahre später: Massenüberwachung, CBDCs, Social Scoring — Hughes hatte Recht.</p>
+      </div>
+    </div>
+
+    <div class="card animate-in" onclick="this.classList.toggle('revealed')" style="cursor:pointer;margin-bottom:8px">
+      <span class="fact-number">💻</span>
+      <span class="fact-label">«Cypherpunks write code»</span>
+      <div class="reveal-hint">Antippen für Originaltext</div>
+      <div class="reveal-content">
+        <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7;font-style:italic;margin-bottom:8px">«Cypherpunks write code. We know that someone has to write software to defend privacy, and since we can't get privacy unless we all do, we're going to write it. We publish our code so that our fellow Cypherpunks may practice and play with it. Our code is free for all to use, worldwide.»</p>
+        <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7;font-style:italic">«We know that software can't be destroyed and that a widely dispersed system can't be shut down.»</p>
+        <p style="color:var(--gold);font-size:var(--text-xs);margin-top:8px">→ Die DNA von Bitcoin und Open Source. Code als Waffe für Freiheit. Satoshi schrieb Code — kein Manifest.</p>
+      </div>
+    </div>
+
+    <div class="card animate-in" onclick="this.classList.toggle('revealed')" style="cursor:pointer;margin-bottom:8px">
+      <span class="fact-number">⚖️</span>
+      <span class="fact-label">Über Regulierung und Verschlüsselung</span>
+      <div class="reveal-hint">Antippen für Originaltext</div>
+      <div class="reveal-content">
+        <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7;font-style:italic;margin-bottom:8px">«Cypherpunks deplore regulations on cryptography, for encryption is fundamentally a private act. The act of encryption, in fact, removes information from the public realm. Even laws against cryptography reach only so far as a nation's border and the arm of its violence.»</p>
+        <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7;font-style:italic">«Cryptography will ineluctably spread over the whole globe, and with it the anonymous transactions systems that it makes possible.»</p>
+        <p style="color:var(--gold);font-size:var(--text-xs);margin-top:8px">→ Prophezeiung von 1993: HTTPS verschlüsselt heute 95% des Internets. Bitcoin ist global. Beides unumkehrbar.</p>
+      </div>
+    </div>
+
+    <div class="quote" style="margin-top:12px">
+      <p>«For privacy to be widespread it must be part of a social contract. People must come and together deploy these systems for the common good. [...] The Cypherpunks are actively engaged in making the networks safer for privacy. Let us proceed together apace. Onward.»</p>
       <cite>— Eric Hughes, A Cypherpunk's Manifesto, 9. März 1993</cite>
     </div>
+
+    <p style="color:var(--muted);font-size:var(--text-xs);margin-top:12px;text-align:center">
+      <a href="https://btcmap.org/cypherpunks-manifesto.pdf" target="_blank" rel="noopener noreferrer" style="color:var(--gold);text-decoration:none">📄 Vollständiges Manifest als PDF lesen →</a>
+    </p>
   </div>
   <div class="section">
     <div class="section-title">Cypherpunk-Pioniere</div>
