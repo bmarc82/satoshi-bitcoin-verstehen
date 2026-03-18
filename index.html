@@ -1839,7 +1839,14 @@
       <li>🎙️ <strong>Medien</strong> — Podcasts, Videos & Kanäle</li>
       <li>🎵 <strong>Kultur</strong> — Memes, Musik & Community</li>
       <li>📰 <strong>News</strong> — Bitcoin-Nachrichten live</li>
+      <li>📈 <strong>Fear & Greed Index</strong> — Marktstimmung in Echtzeit</li>
+      <li>🌐 <strong>Netzwerk</strong> — Hashrate, Nodes, Mempool live</li>
       <li>🧮 <strong>Rechner</strong> — Simulationen & Szenarien</li>
+      <li>🛡️ <strong>Dos & Don'ts</strong> — Goldene Regeln für Bitcoin-Besitzer</li>
+      <li>🟠 <strong>Relai</strong> — Bitcoin kaufen in der Schweiz</li>
+      <li>💳 <strong>Alltag</strong> — Bitcoin im täglichen Leben</li>
+      <li>🐦 <strong>Social</strong> — Bitcoin auf 𝕏 / Twitter</li>
+      <li>⛏️ <strong>Stacking</strong> — Gamification, Quiz & Satoshis sammeln</li>
     </ul>
     <p style="margin-top:24px;color:#8B99A8;font-size:0.85rem">© BIT Solutions · btc-klar.ch · Bitte aktiviere JavaScript für die volle App-Erfahrung.</p>
   </div>
@@ -11468,10 +11475,32 @@ function hydrateSiteConfig() {
 // ║  VERSION & CHANGELOG                     ║
 // ╚══════════════════════════════════════════╝
 
-const APP_VERSION = '3.0.0';
+const APP_VERSION = '3.1.0';
 const APP_BUILD = '2026-03-18';
 
 const CHANGELOG = [
+  {
+    version: '3.1.0',
+    date: '2026-03-18',
+    title: 'Open Source & Cypherpunks',
+    changes: [
+      { type: 'neu', text: 'Cypherpunks: «Wer sind die Cypherpunks?» mit Timeline 1985–2009' },
+      { type: 'neu', text: 'A Cypherpunk\'s Manifesto — Volltext mit deutscher Übersetzung' },
+      { type: 'neu', text: 'Bitcoin Whales: Meerestier-Klassifizierung, grösste Wale, Tracking-Tools' },
+      { type: 'neu', text: 'SITE_CONFIG: Alle persönlichen Werte zentral konfigurierbar' },
+      { type: 'neu', text: 'SEO: robots.txt, sitemap.xml, JSON-LD, canonical, Open Graph komplett' },
+      { type: 'neu', text: 'Open Source: README, CONTRIBUTING, LICENSE (MIT), .gitignore' },
+      { type: 'verbessert', text: 'Relai: Firma & Regulierung (VQF, MiCA, ISO 27001), Bewertungen, erweiterte Vergleichstabelle' },
+      { type: 'verbessert', text: 'Rabbit Hole: Module manuell abschliessen statt Auto-Complete' },
+      { type: 'verbessert', text: 'Kaninchen & FAB: bessere Sichtbarkeit, kompakteres Banner' },
+      { type: 'verbessert', text: 'Heading-Hierarchie: 1 H1 statt 42, alle Module auf H2' },
+      { type: 'verbessert', text: 'noscript-Fallback mit allen 39 Modulen für Crawler' },
+      { type: 'fix', text: 'SW: Hostname-Matching von includes() auf exakten Vergleich (Sicherheit)' },
+      { type: 'fix', text: 'Whale-Level: Schwelle auf 99M gesenkt (war unerreichbar bei 100M)' },
+      { type: 'fix', text: 'Quiz-Cooldown: 24h auf 21 Minuten reduziert' },
+      { type: 'fix', text: 'nginx: CSP worker-src ergänzt, www → non-www Redirect' }
+    ]
+  },
   {
     version: '3.0.0',
     date: '2026-03-17',
