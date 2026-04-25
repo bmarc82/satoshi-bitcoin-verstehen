@@ -16890,21 +16890,25 @@ function toggleAccordion(el) {
 }
 
 // ╔══════════════════════════════════════════╗
-// ║  SWIPE GESTURES                          ║
+// ║  SWIPE GESTURES — KOMPLETT DEAKTIVIERT   ║
 // ╚══════════════════════════════════════════╝
-
-let touchStartX = 0;
-let touchEndX = 0;
-document.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
-document.addEventListener('touchend', function(e) {
-  touchEndX = e.changedTouches[0].screenX;
-  var diff = touchStartX - touchEndX;
-  if (Math.abs(diff) > 60) {
-    var idx = screenKeys.indexOf(currentScreen);
-    if (diff > 0 && idx < screenKeys.length - 1) navigateTo(screenKeys[idx + 1]);
-    else if (diff < 0 && idx > 0) navigateTo(screenKeys[idx - 1]);
-  }
-}, { passive: true });
+//
+// Die ursprüngliche Swipe-Navigation hat Navigation-Sprünge
+// verursacht: User scrollt vertikal, leichte horizontale Drift
+// >60px triggerte unbeabsichtigte Wisch-Navigation. Schwer zu
+// reparieren ohne UX-Risiko (auf welchen Screens darf gewischt
+// werden? Was ist mit Tabellen, scrollbaren Iframes, Sliders?).
+//
+// Entscheidung: Swipe-Navigation deaktivieren. Der User hat genug
+// Navigation via Bottom-Nav, Module-Grid, Lernpfade, «Weiterlernen»-
+// Button und Direktlinks. Eine zusätzliche Wisch-Geste bringt
+// minimalen Mehrwert und verursacht echte UX-Probleme auf Touch-
+// Geräten. Wenn jemand Swipe will, kann das später spezifisch
+// in einzelnen Komponenten implementiert werden.
+//
+// Falls reaktiviert: prüfen, dass Math.abs(deltaX) > 2 * Math.abs(deltaY),
+// touchStart NICHT in [INPUT, BUTTON, A, SELECT, TEXTAREA, [onclick]],
+// Schwelle ≥ 100px, und nur wenn currentScreen in expliziter Whitelist.
 
 // ╔══════════════════════════════════════════╗
 // ║  KEYBOARD NAVIGATION                    ║
