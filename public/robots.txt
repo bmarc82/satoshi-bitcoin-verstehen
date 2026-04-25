@@ -1,0 +1,9 @@
+# Satoshi — Bitcoin Verstehen (btc-klar.ch)
+User-agent: *
+Allow: /
+
+# Service Worker explizit erlauben — manche PWA-Validatoren prüfen das.
+# (Hash-Fragmente wie /#geld brauchen keine Disallow-Regel; Crawler
+# behandeln sie ohnehin nicht als eigene URLs.)
+
+Sitemap: https://btc-klar.ch/sitemap.xml

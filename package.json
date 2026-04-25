@@ -1,0 +1,30 @@
+{
+  "name": "bits-satoshi-app",
+  "version": "3.3.0",
+  "description": "Satoshi — Bitcoin Verstehen. Kostenlose, Open-Source-PWA für Bitcoin-Bildung auf Deutsch.",
+  "private": true,
+  "scripts": {
+    "check": "node scripts/check.js",
+    "dev": "node scripts/dev-server.js",
+    "deploy:check": "node scripts/check.js",
+    "qr": "npx --yes qrcode -t svg -o public/icons/donation-qr.svg \"bitcoin:$(node -e \"const fs=require('fs');const m=fs.readFileSync('public/index.html','utf8').match(/donationAddr:\\s*['\\\"]([^'\\\"]+)/);console.log(m[1])\")\"",
+    "version:bump": "echo Manuell in public/index.html APP_VERSION + sw.js SHELL_CACHE bumpen"
+  },
+  "keywords": [
+    "bitcoin",
+    "education",
+    "pwa",
+    "schweiz",
+    "deutsch",
+    "self-custody"
+  ],
+  "homepage": "https://btc-klar.ch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bmarc82/bits-satoshi-app"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}

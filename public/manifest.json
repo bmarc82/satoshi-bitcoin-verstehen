@@ -1,13 +1,18 @@
 {
+  "id": "/?source=pwa",
   "name": "Satoshi — Bitcoin Verstehen",
   "short_name": "Satoshi",
   "description": "Umfassendes Bitcoin-Bildungssystem — 39 Module, Live-Daten, Offline-fähig",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
   "background_color": "#080C10",
   "theme_color": "#F7B731",
   "lang": "de-CH",
+  "dir": "ltr",
+  "categories": ["education", "finance"],
   "icons": [
     { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
     { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }

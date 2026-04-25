@@ -2,7 +2,7 @@
 
 **Die interaktive Bitcoin-Bildungsplattform als Progressive Web App**
 
-39 Module, Live-Daten, Gamification, Offline-fähig — vom Einsteiger zum Experten.
+49+ Module, Live-Daten, Gamification, Offline-fähig — vom Einsteiger zum Experten.
 Kostenlos, werbefrei, Open Source.
 
 > **Live:** [btc-klar.ch](https://btc-klar.ch)
@@ -65,12 +65,18 @@ Satoshi ist eine umfassende Bitcoin-Bildungs-App, die als Single-Page PWA komple
 git clone https://github.com/bmarc82/satoshi-bitcoin-verstehen.git
 cd satoshi-bitcoin-verstehen
 
-# Lokalen Server starten (eine der Optionen)
-python3 -m http.server 8080        # Python
-npx serve .                         # Node.js
-# oder: VS Code → Live Server Extension → "Go Live"
+# Lokalen Dev-Server starten (Node 18+) — mit SPA-Fallback wie nginx
+node scripts/dev-server.js
+# → http://127.0.0.1:8765
 
-# Browser öffnen → http://localhost:8080
+# Build-Validation (HTML, Hashes, Modul-Konsistenz)
+node scripts/check.js
+```
+
+Alternativ via npm-Skripten:
+```bash
+npm run dev      # Dev-Server
+npm run check    # Build-Check
 ```
 
 > **Hinweis:** HTTPS ist erforderlich für PWA-Funktionalität (Service Worker, Installation). Lokal funktioniert `localhost` auch ohne HTTPS.
@@ -80,24 +86,37 @@ npx serve .                         # Node.js
 ## Projektstruktur
 
 ```
-satoshi-bitcoin-verstehen/
-├── index.html          # Haupt-App (All-in-One: HTML + CSS + JS)
-├── rabbit-hole.js      # Geführte Reise & Hidden Rabbits System
-├── sw.js               # Service Worker (Offline-Caching)
-├── manifest.json       # PWA Web App Manifest
-├── nginx.conf          # Nginx-Konfiguration (Produktion)
-├── .htaccess           # Apache-Konfiguration (Alternative)
-├── robots.txt          # SEO: Crawler-Steuerung
-├── sitemap.xml         # SEO: Sitemap mit allen Modulen
-├── icons/
-│   └── icon.svg        # App-Icon (SVG)
+BITS-SATOSHI-APP/
+├── public/                        # ★ Deploy-Artifacts (Document-Root)
+│   ├── index.html                 # Haupt-App (HTML + CSS + JS, ~20'000 Zeilen)
+│   ├── sw.js                      # Service Worker
+│   ├── rabbit-hole.js             # Rabbit-Hole-Modul
+│   ├── manifest.json              # PWA-Manifest
+│   ├── sitemap.xml                # 45 URLs für SEO
+│   ├── robots.txt                 # Crawler-Steuerung
+│   ├── .htaccess                  # Apache-Fallback
+│   └── icons/
+│       ├── icon.svg
+│       └── donation-qr.svg        # SHA-256-verifiziert
+├── server/                        # nginx-Konfig
+│   ├── nginx.conf
+│   └── nginx-security-headers.conf
+├── scripts/                       # Dev-Tools (laufen via Node)
+│   ├── check.js                   # Build-Validation
+│   └── dev-server.js              # SPA-Dev-Server
 ├── docs/
+│   ├── DEPLOYMENT.md              # Deploy-Guide (Schritt für Schritt)
+│   ├── DEPLOY-NGINX.md            # nginx-Spezifika
 │   ├── DOKUMENTATION.md
 │   └── TECHNISCHE-DOKUMENTATION.md
-├── LICENSE             # MIT License
-├── CONTRIBUTING.md     # Beitragsrichtlinien
-└── README.md           # Diese Datei
+├── package.json                   # npm-Skripte
+├── README.md                      # diese Datei
+├── CONTRIBUTING.md
+├── LICENSE                        # MIT
+└── .gitignore
 ```
+
+**Was wird deployt?** Nur `public/`. Der Rest ist Doku, Tools und Source.
 
 ---
 
@@ -127,19 +146,28 @@ satoshi-bitcoin-verstehen/
 
 Die App ist eine statische SPA und läuft auf jedem Webserver. HTTPS ist Pflicht für PWA.
 
+**Quick-Deploy mit nginx:**
 ```bash
-# Dateien auf Server kopieren
-rsync -avz --exclude '.git' --exclude 'node_modules' ./ user@server:/var/www/btc-klar.ch/
+# Pre-Check
+node scripts/check.js
 
-# SSL-Zertifikat einrichten
-sudo certbot --nginx -d btc-klar.ch
+# App-Files auf Server
+rsync -avz --delete public/ user@server:/var/www/btc-klar.ch/
+
+# nginx-Konfig (einmalig)
+scp server/nginx-security-headers.conf user@server:/etc/nginx/snippets/satoshi-security-headers.conf
+scp server/nginx.conf user@server:/etc/nginx/sites-available/btc-klar.ch
+ssh user@server "sudo nginx -t && sudo systemctl reload nginx"
+
+# SSL-Zertifikat einrichten (einmalig)
+ssh user@server "sudo certbot --nginx -d btc-klar.ch -d www.btc-klar.ch"
 ```
 
-Detaillierte Anleitungen: **[docs/TECHNISCHE-DOKUMENTATION.md](docs/TECHNISCHE-DOKUMENTATION.md)**
+**Vollständige Anleitung mit Verifikations-Schritten:** **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**
 
 ### Konfiguration anpassen
 
-Alle persönlichen Werte sind zentral in **`SITE_CONFIG`** am Anfang des `<script>`-Blocks in `index.html` konfigurierbar:
+Alle persönlichen Werte sind zentral in **`SITE_CONFIG`** am Anfang des `<script>`-Blocks in `public/index.html` konfigurierbar:
 
 ```javascript
 var SITE_CONFIG = {
@@ -157,23 +185,34 @@ var SITE_CONFIG = {
 ```
 
 Zusätzlich manuell anpassen:
-- **`nginx.conf`** — Domain, SSL-Pfade, Log-Pfade
-- **`sitemap.xml`** / **`robots.txt`** — Domain ersetzen
-- **Meta-Tags** im `<head>` — `canonical`, `og:url`, `og:image`, `twitter:image`
+- **`server/nginx.conf`** — Domain, SSL-Pfade, Log-Pfade
+- **`public/sitemap.xml`** / **`public/robots.txt`** — Domain ersetzen
+- **Meta-Tags** im `<head>` von `public/index.html` — `canonical`, `og:url`, `og:image`, `twitter:image`
 - **`<noscript>`-Block** im Donation-Widget — BTC-Adresse
 - **Impressum** — Firma, LinkedIn-Link
 
 **Donation-Hash generieren** (für Integritätsprüfung):
 ```bash
 echo -n "bc1q..." | shasum -a 256
+# oder
+node -e "console.log(require('crypto').createHash('sha256').update('bc1q...').digest('hex'))"
+```
+
+**QR-Code regenerieren** (nach Adress-Änderung):
+```bash
+npx --yes qrcode -t svg -o public/icons/donation-qr.svg "bitcoin:bc1q..."
+node -e "console.log(require('crypto').createHash('sha256').update(require('fs').readFileSync('public/icons/donation-qr.svg')).digest('hex'))"
+# Hash in SITE_CONFIG.donationQrHash eintragen, dann: node scripts/check.js
 ```
 
 ---
 
 ## Dokumentation
 
+- **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** — Step-by-step Deploy-Anleitung mit Verifikation
 - **[docs/DOKUMENTATION.md](docs/DOKUMENTATION.md)** — Architektur, Module, Design System, APIs, UX
-- **[docs/TECHNISCHE-DOKUMENTATION.md](docs/TECHNISCHE-DOKUMENTATION.md)** — Setup, Deployment, Service Worker, Sicherheit
+- **[docs/TECHNISCHE-DOKUMENTATION.md](docs/TECHNISCHE-DOKUMENTATION.md)** — Setup, Service Worker, Sicherheit
+- **[docs/DEPLOY-NGINX.md](docs/DEPLOY-NGINX.md)** — Ergänzende nginx-Spezifika
 
 ---
 

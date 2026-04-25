@@ -10,30 +10,20 @@ Desktop.ini
 *.swo
 *~
 
-# Dev notes & drafts (not part of the app)
-*.draft.md
-Wissen.md
-Wissen_2.md
-Kurs_Module.md
-Social_Media_Posts.md
-Satoshi-Projektbeschreibung_2.md
-Audible.md
-Blogs.txt
-PUBLISH.md
-bitcoin_byzantinisches_problem.md
-bitcoin_funfacts.md
-bitcoin_mythen.md
-bitcoin_vs_fiat.md
-cbdc.md
-satoshi_nakamoto.md
-literatur.md
+# Inhalts-Quellen (MD-Drafts), aus denen App-Module kompiliert wurden.
+# Werden NICHT deployt, dienen nur als Archiv und für künftige Updates.
+content-sources/
 
-# Deployment docs (server-specific)
-DEPLOY-NGINX.md
+# Persönliche Notizen, Social-Media-Drafts, Projektbeschreibungen.
+# Nicht Teil des Repos.
+dev-notes/
 
-# Empty directories
-assets/
-
-# Node (falls jemand npx serve nutzt)
+# Node (falls npm-Skripte genutzt werden)
 node_modules/
 package-lock.json
+
+# Logs / temp
+*.log
+.tmp/
+.cache/
+build/

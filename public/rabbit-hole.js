@@ -102,51 +102,14 @@
   };
 
   /* ══════════════════════════════════════════════════════════════
-   *  HIDDEN WHITE RABBITS — 39 versteckte Kaninchen in allen Modulen
-   *  500,000 sats each × 39 = 19,500,000
+   *  HIDDEN WHITE RABBITS — derived from JOURNEY_KEYS so the two
+   *  lists can never drift apart. 500,000 sats each × 39 = 19,500,000.
    * ══════════════════════════════════════════════════════════════ */
 
-  var HIDDEN_RABBITS = [
-    { id: 'rb_geld', screen: 'geld', reward: 500000 },
-    { id: 'rb_inflation', screen: 'inflation', reward: 500000 },
-    { id: 'rb_oekonomie', screen: 'oekonomie', reward: 500000 },
-    { id: 'rb_analogien', screen: 'analogien', reward: 500000 },
-    { id: 'rb_satoshi', screen: 'satoshi', reward: 500000 },
-    { id: 'rb_blockchain', screen: 'blockchain', reward: 500000 },
-    { id: 'rb_whitepaper', screen: 'whitepaper', reward: 500000 },
-    { id: 'rb_vergleich', screen: 'vergleich', reward: 500000 },
-    { id: 'rb_schweiz', screen: 'schweiz', reward: 500000 },
-    { id: 'rb_kaufen', screen: 'kaufen', reward: 500000 },
-    { id: 'rb_dos', screen: 'dos', reward: 500000 },
-    { id: 'rb_lexikon', screen: 'lexikon', reward: 500000 },
-    { id: 'rb_literatur', screen: 'literatur', reward: 500000 },
-    { id: 'rb_krypto', screen: 'krypto', reward: 500000 },
-    { id: 'rb_weltweit', screen: 'weltweit', reward: 500000 },
-    { id: 'rb_feargreed', screen: 'feargreed', reward: 500000 },
-    { id: 'rb_stacking', screen: 'stacking', reward: 500000 },
-    { id: 'rb_medien', screen: 'medien', reward: 500000 },
-    { id: 'rb_news', screen: 'news', reward: 500000 },
-    { id: 'rb_mining', screen: 'mining', reward: 500000 },
-    { id: 'rb_nodes', screen: 'nodes', reward: 500000 },
-    { id: 'rb_lightning', screen: 'lightning', reward: 500000 },
-    { id: 'rb_chronologie', screen: 'chronologie', reward: 500000 },
-    { id: 'rb_sicherheit', screen: 'sicherheit', reward: 500000 },
-    { id: 'rb_regulierung', screen: 'regulierung', reward: 500000 },
-    { id: 'rb_institutionen', screen: 'institutionen', reward: 500000 },
-    { id: 'rb_zyklen', screen: 'zyklen', reward: 500000 },
-    { id: 'rb_alltag', screen: 'alltag', reward: 500000 },
-    { id: 'rb_relai', screen: 'relai', reward: 500000 },
-    { id: 'rb_rechner', screen: 'rechner', reward: 500000 },
-    { id: 'rb_kultur', screen: 'kultur', reward: 500000 },
-    { id: 'rb_psychologie', screen: 'psychologie', reward: 500000 },
-    { id: 'rb_energie', screen: 'energie', reward: 500000 },
-    { id: 'rb_netzwerk', screen: 'netzwerk', reward: 500000 },
-    { id: 'rb_layer2', screen: 'layer2', reward: 500000 },
-    { id: 'rb_onchain', screen: 'onchain', reward: 500000 },
-    { id: 'rb_entwicklung', screen: 'entwicklung', reward: 500000 },
-    { id: 'rb_cbdc', screen: 'cbdc', reward: 500000 },
-    { id: 'rb_social', screen: 'social', reward: 500000 }
-  ];
+  var RABBIT_REWARD = 500000;
+  var HIDDEN_RABBITS = JOURNEY_KEYS.map(function (key) {
+    return { id: 'rb_' + key, screen: key, reward: RABBIT_REWARD };
+  });
 
   /* ══════════════════════════════════════════════════════════════
    *  STATE MANAGEMENT — localStorage
@@ -157,19 +120,46 @@
   var state;
   var foundRabbits = [];
 
+  /* Safe localStorage helpers — survive QuotaExceededError, private mode */
+  function storageGet(key, fallback) {
+    try {
+      var raw = localStorage.getItem(key);
+      return raw == null ? fallback : JSON.parse(raw);
+    } catch (e) {
+      console.warn('[rabbit-hole] read failed for', key, e);
+      return fallback;
+    }
+  }
+  function storageSet(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+      console.warn('[rabbit-hole] write failed for', key, e);
+    }
+  }
+  function storageRemove(key) {
+    try { localStorage.removeItem(key); } catch (e) { /* ignore */ }
+  }
+
+  /* Normalize any persisted state to the current shape. Returns null if
+   * the input cannot be salvaged into a valid state object. */
+  function migrateState(raw) {
+    if (!raw || typeof raw !== 'object') return null;
+    if (!Array.isArray(raw.completedSteps)) return null;
+    return {
+      active: raw.active !== false,
+      currentStep: typeof raw.currentStep === 'number' ? raw.currentStep : 0,
+      completedSteps: raw.completedSteps.filter(function (n) { return typeof n === 'number'; }),
+      rewardedSteps: Array.isArray(raw.rewardedSteps) ? raw.rewardedSteps : [],
+      startedAt: typeof raw.startedAt === 'number' ? raw.startedAt : Date.now(),
+      lastVisitedAt: typeof raw.lastVisitedAt === 'number' ? raw.lastVisitedAt : Date.now()
+    };
+  }
+
   function loadState() {
-    try {
-      state = JSON.parse(localStorage.getItem(STATE_KEY) || 'null');
-      if (state && typeof state === 'object' && Array.isArray(state.completedSteps)) {
-        // valid
-      } else {
-        state = null;
-      }
-    } catch (e) { state = null; }
-    try {
-      foundRabbits = JSON.parse(localStorage.getItem(RABBITS_KEY) || '[]');
-      if (!Array.isArray(foundRabbits)) foundRabbits = [];
-    } catch (e) { foundRabbits = []; }
+    state = migrateState(storageGet(STATE_KEY, null));
+    var rabbits = storageGet(RABBITS_KEY, []);
+    foundRabbits = Array.isArray(rabbits) ? rabbits : [];
   }
 
   function defaultState() {
@@ -186,11 +176,11 @@
   function saveState() {
     if (!state) return;
     state.lastVisitedAt = Date.now();
-    localStorage.setItem(STATE_KEY, JSON.stringify(state));
+    storageSet(STATE_KEY, state);
   }
 
   function saveRabbits() {
-    localStorage.setItem(RABBITS_KEY, JSON.stringify(foundRabbits));
+    storageSet(RABBITS_KEY, foundRabbits);
   }
 
   function isActive() { return state && state.active; }
@@ -218,7 +208,7 @@
   }
 
   function isStepCompleted(stepIndex) {
-    return state && state.completedSteps.indexOf(stepIndex) !== -1;
+    return state && state.completedSteps.includes(stepIndex);
   }
 
   function getProgress() {
@@ -240,6 +230,77 @@
 
   function fmtNum(n) {
     return typeof formatNumber === 'function' ? formatNumber(n) : n.toLocaleString('de-CH');
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+   *  EVENT DELEGATION — single click+keydown handler per root,
+   *  routed by data-action. Replaces inline onclick="…" attributes,
+   *  decouples markup from globals, and gives keyboard support to
+   *  non-button elements (role="button" tabindex="0") for free.
+   * ══════════════════════════════════════════════════════════════ */
+
+  function dispatchAction(target) {
+    var btn = target.closest && target.closest('[data-action]');
+    if (!btn) return false;
+    var action = btn.dataset.action;
+    var idx = btn.dataset.stepIdx ? parseInt(btn.dataset.stepIdx, 10) : -1;
+    switch (action) {
+      case 'start': start(); return true;
+      case 'reset': reset(); return true;
+      case 'nav-home':
+        if (typeof navigateTo === 'function') navigateTo('home');
+        return true;
+      case 'nav-rabbithole':
+        if (typeof navigateTo === 'function') navigateTo('rabbithole');
+        return true;
+      case 'goto-step':
+        if (idx >= 0) goToStep(idx);
+        return true;
+      case 'toggle-chapter':
+        var steps = btn.parentElement.querySelector('.rabbit-chapter-steps');
+        if (steps) {
+          var open = steps.classList.toggle('is-open');
+          btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+        return true;
+    }
+    return false;
+  }
+
+  function attachDelegatedHandlers(root) {
+    if (!root || root._rabbitHandlersAttached) return;
+    root._rabbitHandlersAttached = true;
+    root.addEventListener('click', function (e) { dispatchAction(e.target); });
+    root.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      var btn = e.target.closest && e.target.closest('[data-action]');
+      if (!btn) return;
+      e.preventDefault();
+      dispatchAction(e.target);
+    });
+  }
+
+  /* ESC-close + backdrop-click + initial focus for overlays.
+   * Returns a close() function the caller invokes when its own
+   * confirm-button is clicked. */
+  function setupOverlay(overlay, onClose) {
+    function close() {
+      document.removeEventListener('keydown', onKey);
+      overlay.classList.remove('visible');
+      setTimeout(function () {
+        overlay.remove();
+        if (onClose) onClose();
+      }, 350);
+    }
+    function onKey(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', onKey);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+    /* Move focus into the overlay for screen-reader / keyboard users */
+    requestAnimationFrame(function () {
+      var btn = overlay.querySelector('.rabbit-btn');
+      if (btn) btn.focus();
+    });
+    return close;
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -282,7 +343,9 @@
       '.rabbit-chapter-title{font-weight:700;font-size:var(--text-sm);color:var(--text)}',
       '.rabbit-chapter-count{margin-left:auto;font-size:var(--text-xs);color:var(--muted);font-family:var(--font-mono)}',
       '.rabbit-chapter-sub{color:var(--muted);font-size:var(--text-xs);margin-top:6px;line-height:1.4;font-style:italic}',
-      '.rabbit-chapter-steps{margin-top:12px}',
+      '.rabbit-chapter-steps{margin-top:12px;display:none}',
+      '.rabbit-chapter-steps.is-open{display:block}',
+      '.rabbit-chapter-head:focus-visible,.rabbit-step:focus-visible,.rabbit-fab:focus-visible,.rabbit-home-card:focus-visible{outline:2px solid var(--gold);outline-offset:2px}',
 
       /* Steps */
       '.rabbit-step{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity 0.2s}',
@@ -363,6 +426,7 @@
     fabEl = document.createElement('div');
     fabEl.className = 'rabbit-fab has-next';
     fabEl.setAttribute('role', 'button');
+    fabEl.setAttribute('tabindex', '0');
     fabEl.setAttribute('aria-label', 'Rabbit Hole — Deine Bitcoin-Reise');
     fabEl.innerHTML = '<svg class="rabbit-fab-ring" viewBox="0 0 52 52">' +
       '<circle r="23" cx="26" cy="26" stroke="rgba(255,255,255,0.06)" />' +
@@ -371,23 +435,23 @@
       '<span class="rabbit-emoji">🐇</span>' +
       '<span class="rabbit-step-badge">0</span>';
 
-    /* Click: jump to current step or last completed */
-    fabEl.addEventListener('click', function () {
+    /* Click / Enter / Space: jump to current step or last completed */
+    function activate() {
       if (!state) {
         if (typeof navigateTo === 'function') navigateTo('rabbithole');
         return;
       }
       var progress = getProgress();
       if (progress.done >= progress.total) {
-        /* All done → show overview */
         if (typeof navigateTo === 'function') navigateTo('rabbithole');
         return;
       }
-      /* Jump directly to current step module */
       var key = JOURNEY_KEYS[state.currentStep];
-      if (key && typeof navigateTo === 'function') {
-        navigateTo(key);
-      }
+      if (key && typeof navigateTo === 'function') navigateTo(key);
+    }
+    fabEl.addEventListener('click', activate);
+    fabEl.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
     });
 
     /* Long press: go to overview */
@@ -398,8 +462,10 @@
         if (typeof navigateTo === 'function') navigateTo('rabbithole');
       }, 600);
     });
-    fabEl.addEventListener('pointerup', function () { if (longTimer) clearTimeout(longTimer); });
-    fabEl.addEventListener('pointercancel', function () { if (longTimer) clearTimeout(longTimer); });
+    function cancelLongPress() { if (longTimer) { clearTimeout(longTimer); longTimer = null; } }
+    fabEl.addEventListener('pointerup', cancelLongPress);
+    fabEl.addEventListener('pointercancel', cancelLongPress);
+    fabEl.addEventListener('pointerleave', cancelLongPress);
 
     document.body.appendChild(fabEl);
   }
@@ -525,14 +591,14 @@
       var chapterActive = !chapterComplete && isStarted && ci === getChapterForStep(state.currentStep).index;
 
       html += '<div class="rabbit-chapter ' + (chapterComplete ? 'done' : chapterActive ? 'active' : '') + '" style="border-left-color:' + ch.color + '">';
-      html += '<div class="rabbit-chapter-head" onclick="this.parentElement.querySelector(\'.rabbit-chapter-steps\').style.display=this.parentElement.querySelector(\'.rabbit-chapter-steps\').style.display===\'none\'?\'block\':\'none\'">';
+      html += '<div class="rabbit-chapter-head" role="button" tabindex="0" aria-expanded="' + (chapterActive || chapterComplete || !isStarted ? 'true' : 'false') + '" data-action="toggle-chapter">';
       html += '<span class="rabbit-chapter-emoji">' + ch.emoji + '</span>';
       html += '<span class="rabbit-chapter-title" style="color:' + ch.color + '">' + escHtml(ch.title) + '</span>';
       html += '<span class="rabbit-chapter-count">' + chapterDone + '/' + ch.keys.length + (chapterComplete ? ' ✓' : '') + '</span>';
       html += '</div>';
       html += '<div class="rabbit-chapter-sub">' + escHtml(ch.subtitle) + '</div>';
 
-      html += '<div class="rabbit-chapter-steps" style="display:' + (chapterActive || chapterComplete || !isStarted ? 'block' : 'none') + '">';
+      html += '<div class="rabbit-chapter-steps' + (chapterActive || chapterComplete || !isStarted ? ' is-open' : '') + '">';
 
       ch.keys.forEach(function (key) {
         var stepIdx = globalIdx++;
@@ -543,9 +609,9 @@
         var icon = mod ? mod.icon : '📄';
         var name = mod ? mod.name : key;
         var teaser = MODULE_TEASERS[key] || '';
-        var rewarded = state && state.rewardedSteps.indexOf(stepIdx) !== -1;
+        var rewarded = state && state.rewardedSteps.includes(stepIdx);
 
-        html += '<div class="rabbit-step ' + (completed ? 'completed' : current ? 'current' : future ? 'future' : '') + '" onclick="RabbitHole.goToStep(' + stepIdx + ')">';
+        html += '<div class="rabbit-step ' + (completed ? 'completed' : current ? 'current' : future ? 'future' : '') + '" role="button" tabindex="0" data-action="goto-step" data-step-idx="' + stepIdx + '">';
         html += '<span class="rabbit-step-icon">' + icon + '</span>';
         html += '<div class="rabbit-step-info">';
         html += '<div class="rabbit-step-name">' + escHtml(name) + '</div>';
@@ -571,19 +637,20 @@
     /* Actions */
     html += '<div class="rabbit-actions">';
     if (!isStarted) {
-      html += '<button class="rabbit-btn rabbit-btn-primary" onclick="RabbitHole.start()">🐇 Reise starten</button>';
+      html += '<button class="rabbit-btn rabbit-btn-primary" data-action="start">🐇 Reise starten</button>';
     } else if (isComplete) {
-      html += '<button class="rabbit-btn rabbit-btn-primary" onclick="navigateTo(\'home\')">🏠 Zurück zur Startseite</button>';
-      html += '<button class="rabbit-btn rabbit-btn-danger" onclick="RabbitHole.reset()">Reise zurücksetzen</button>';
+      html += '<button class="rabbit-btn rabbit-btn-primary" data-action="nav-home">🏠 Zurück zur Startseite</button>';
+      html += '<button class="rabbit-btn rabbit-btn-danger" data-action="reset">Reise zurücksetzen</button>';
     } else {
       var nextMod = getModuleByKey(JOURNEY_KEYS[state.currentStep]);
-      html += '<button class="rabbit-btn rabbit-btn-primary" onclick="RabbitHole.goToStep(' + state.currentStep + ')">🐇 Weiter: ' + escHtml(nextMod ? nextMod.name : '') + '</button>';
-      html += '<button class="rabbit-btn rabbit-btn-secondary" onclick="navigateTo(\'home\')">🏠 Startseite</button>';
-      html += '<button class="rabbit-btn rabbit-btn-danger" onclick="RabbitHole.reset()">Reise zurücksetzen</button>';
+      html += '<button class="rabbit-btn rabbit-btn-primary" data-action="goto-step" data-step-idx="' + state.currentStep + '">🐇 Weiter: ' + escHtml(nextMod ? nextMod.name : '') + '</button>';
+      html += '<button class="rabbit-btn rabbit-btn-secondary" data-action="nav-home">🏠 Startseite</button>';
+      html += '<button class="rabbit-btn rabbit-btn-danger" data-action="reset">Reise zurücksetzen</button>';
     }
     html += '</div>';
 
     screen.innerHTML = html;
+    attachDelegatedHandlers(screen);
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -613,13 +680,13 @@
     var rabbitProg = getRabbitProgress();
 
     if (!isStarted) {
-      el.innerHTML = '<div class="card rabbit-home-card animate-in" onclick="navigateTo(\'rabbithole\')" style="padding:16px;text-align:center">' +
+      el.innerHTML = '<div class="card rabbit-home-card animate-in" role="button" tabindex="0" data-action="nav-rabbithole" style="padding:16px;text-align:center">' +
         '<div style="font-size:1.8rem;margin-bottom:6px">🐇</div>' +
         '<div style="font-weight:700;color:var(--gold);font-size:var(--text-sm)">Follow the White Rabbit</div>' +
         '<div style="color:var(--muted);font-size:var(--text-xs);margin-top:4px;line-height:1.4">Lass dich durch 39 Module führen — vom Einsteiger zum Experten</div>' +
         '</div>';
     } else if (progress.done >= progress.total) {
-      el.innerHTML = '<div class="card rabbit-home-card animate-in" onclick="navigateTo(\'rabbithole\')" style="padding:14px;text-align:center">' +
+      el.innerHTML = '<div class="card rabbit-home-card animate-in" role="button" tabindex="0" data-action="nav-rabbithole" style="padding:14px;text-align:center">' +
         '<span style="color:var(--green);font-weight:700;font-size:var(--text-sm)">🎉 Rabbit Hole komplett!</span>' +
         '<span style="color:var(--muted);font-size:var(--text-xs);margin-left:8px">' + progress.total + '/' + progress.total + ' · 🐇 ' + rabbitProg.done + '/' + rabbitProg.total + '</span>' +
         '</div>';
@@ -627,7 +694,7 @@
       var nextKey = JOURNEY_KEYS[state.currentStep];
       var mod = getModuleByKey(nextKey);
       var chInfo = getChapterForStep(state.currentStep);
-      el.innerHTML = '<div class="card rabbit-home-card animate-in" onclick="RabbitHole.goToStep(' + state.currentStep + ')" style="padding:14px">' +
+      el.innerHTML = '<div class="card rabbit-home-card animate-in" role="button" tabindex="0" data-action="goto-step" data-step-idx="' + state.currentStep + '" style="padding:14px">' +
         '<div style="display:flex;align-items:center;gap:10px">' +
         '<span style="font-size:1.5rem">🐇</span>' +
         '<div style="flex:1;min-width:0">' +
@@ -639,6 +706,7 @@
         '<div class="rabbit-progress-bar" style="margin:8px 0 0;height:4px"><div class="rabbit-progress-fill" style="width:' + progress.pct + '%"></div></div>' +
         '</div>';
     }
+    attachDelegatedHandlers(el);
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -648,7 +716,7 @@
   function collectRabbit(el) {
     var id = el.dataset.rabbitId;
     if (!id) return;
-    if (foundRabbits.indexOf(id) !== -1) return;
+    if (foundRabbits.includes(id)) return;
     var rabbit = HIDDEN_RABBITS.find(function (r) { return r.id === id; });
     if (!rabbit) return;
 
@@ -672,7 +740,7 @@
     document.querySelectorAll('.hidden-rabbit').forEach(function (el) {
       var id = el.dataset.rabbitId;
       if (!id) return;
-      if (foundRabbits.indexOf(id) !== -1) {
+      if (foundRabbits.includes(id)) {
         el.classList.add('found');
         el.innerHTML = '🐇';
         el.style.cursor = 'default';
@@ -687,19 +755,19 @@
     }
     var overlay = document.createElement('div');
     overlay.className = 'rabbit-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
     overlay.innerHTML = '<div class="rabbit-overlay-card">' +
       '<div style="font-size:3rem">🐇🐇🐇</div>' +
       '<h2>Alle Kaninchen gefunden!</h2>' +
       '<p>Du hast alle 39 versteckten weissen Kaninchen im Kaninchenbau entdeckt. Alice wäre stolz auf dich.</p>' +
-      '<p style="color:var(--gold);margin-top:12px;font-weight:600;font-family:var(--font-mono)">+' + fmtNum(HIDDEN_RABBITS.length * 500000) + ' Sats</p>' +
+      '<p style="color:var(--gold);margin-top:12px;font-weight:600;font-family:var(--font-mono)">+' + fmtNum(HIDDEN_RABBITS.length * RABBIT_REWARD) + ' Sats</p>' +
       '<button class="rabbit-btn rabbit-btn-primary" style="margin-top:20px;width:100%">Weiter</button>' +
       '</div>';
     document.body.appendChild(overlay);
     requestAnimationFrame(function () { overlay.classList.add('visible'); });
-    overlay.querySelector('.rabbit-btn').addEventListener('click', function () {
-      overlay.classList.remove('visible');
-      setTimeout(function () { overlay.remove(); }, 350);
-    });
+    var close = setupOverlay(overlay);
+    overlay.querySelector('.rabbit-btn').addEventListener('click', close);
   }
 
   /* Expose globally for onclick */
@@ -715,6 +783,8 @@
 
     var overlay = document.createElement('div');
     overlay.className = 'rabbit-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
     overlay.innerHTML = '<div class="rabbit-overlay-card" style="border-color:' + ch.color + '">' +
       '<div style="font-size:3rem">' + ch.emoji + '</div>' +
       '<h2 style="color:' + ch.color + '">Kapitel ' + (chapterIndex + 1) + '</h2>' +
@@ -725,12 +795,8 @@
     document.body.appendChild(overlay);
     requestAnimationFrame(function () { overlay.classList.add('visible'); });
 
-    function close() {
-      overlay.classList.remove('visible');
-      setTimeout(function () { overlay.remove(); if (callback) callback(); }, 350);
-    }
+    var close = setupOverlay(overlay, callback);
     overlay.querySelector('.rabbit-btn').addEventListener('click', close);
-    overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -741,6 +807,8 @@
     var totalEarned = state ? state.rewardedSteps.length * STEP_REWARD : 0;
     var overlay = document.createElement('div');
     overlay.className = 'rabbit-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
     overlay.innerHTML = '<div class="rabbit-overlay-card">' +
       '<div style="font-size:3rem">🎩🐇✨</div>' +
       '<h2>Der Kaninchenbau ist erforscht!</h2>' +
@@ -757,13 +825,10 @@
       unlockSecret('rabbit_hole_complete');
     }
 
-    overlay.querySelector('.rabbit-btn').addEventListener('click', function () {
-      overlay.classList.remove('visible');
-      setTimeout(function () {
-        overlay.remove();
-        if (typeof navigateTo === 'function') navigateTo('rabbithole');
-      }, 350);
+    var close = setupOverlay(overlay, function () {
+      if (typeof navigateTo === 'function') navigateTo('rabbithole');
     });
+    overlay.querySelector('.rabbit-btn').addEventListener('click', close);
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -776,7 +841,7 @@
     /* Pre-populate from existing visitedModules */
     if (typeof visitedModules !== 'undefined' && Array.isArray(visitedModules)) {
       JOURNEY_KEYS.forEach(function (key, idx) {
-        if (visitedModules.indexOf(key) !== -1 && state.completedSteps.indexOf(idx) === -1) {
+        if (visitedModules.includes(key) && !state.completedSteps.includes(idx)) {
           state.completedSteps.push(idx);
           /* Don't reward pre-existing visits */
         }
@@ -794,19 +859,37 @@
   }
 
   function reset() {
-    if (!confirm('Reise wirklich zurücksetzen? Dein Fortschritt geht verloren.')) return;
-    state = null;
-    localStorage.removeItem(STATE_KEY);
-    hideFAB();
-    hideNextBanner();
-    updateHomeCard();
-    renderOverview();
+    var overlay = document.createElement('div');
+    overlay.className = 'rabbit-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.innerHTML = '<div class="rabbit-overlay-card">' +
+      '<div style="font-size:2.4rem">⚠️</div>' +
+      '<h2>Reise zurücksetzen?</h2>' +
+      '<p>Dein Fortschritt geht verloren — bereits verdiente Sats bleiben aber erhalten.</p>' +
+      '<div style="display:flex;gap:8px;margin-top:20px">' +
+        '<button class="rabbit-btn rabbit-btn-secondary" data-act="cancel" style="flex:1">Abbrechen</button>' +
+        '<button class="rabbit-btn rabbit-btn-primary" data-act="confirm" style="flex:1">Zurücksetzen</button>' +
+      '</div></div>';
+    document.body.appendChild(overlay);
+    requestAnimationFrame(function () { overlay.classList.add('visible'); });
+    var close = setupOverlay(overlay);
+    overlay.querySelector('[data-act="cancel"]').addEventListener('click', close);
+    overlay.querySelector('[data-act="confirm"]').addEventListener('click', function () {
+      state = null;
+      storageRemove(STATE_KEY);
+      hideFAB();
+      hideNextBanner();
+      updateHomeCard();
+      renderOverview();
+      close();
+    });
   }
 
   function advanceCurrent() {
     if (!state) return;
     for (var i = 0; i < JOURNEY_KEYS.length; i++) {
-      if (state.completedSteps.indexOf(i) === -1) {
+      if (!state.completedSteps.includes(i)) {
         state.currentStep = i;
         return;
       }
@@ -816,12 +899,11 @@
 
   function markComplete(stepIndex) {
     if (!state) return;
-    if (state.completedSteps.indexOf(stepIndex) !== -1) return;
+    if (state.completedSteps.includes(stepIndex)) return;
     state.completedSteps.push(stepIndex);
 
     /* Reward sats for journey completion */
-    if (!state.rewardedSteps) state.rewardedSteps = [];
-    if (state.rewardedSteps.indexOf(stepIndex) === -1) {
+    if (!state.rewardedSteps.includes(stepIndex)) {
       state.rewardedSteps.push(stepIndex);
       if (typeof addSats === 'function') {
         addSats(STEP_REWARD, '🐇 Rabbit Hole: Station ' + (stepIndex + 1) + '/39');
@@ -843,7 +925,7 @@
       var prevChapter = -1;
       /* Find highest completed step's chapter */
       if (state.completedSteps.length > 0) {
-        var maxCompleted = Math.max.apply(null, state.completedSteps);
+        var maxCompleted = Math.max(...state.completedSteps);
         prevChapter = getChapterForStep(maxCompleted).index;
       }
       var targetChapter = getChapterForStep(stepIndex).index;
@@ -869,54 +951,43 @@
    * ══════════════════════════════════════════════════════════════ */
 
   function hookNavigation() {
-    if (typeof navigateTo !== 'function') return;
+    /* Listen for the app:navigate CustomEvent dispatched by index.html's
+     * navigateTo. Decoupled — no global function override, no recursion
+     * guard needed. */
+    window.addEventListener('app:navigate', function (e) {
+      var key = e.detail && e.detail.key;
+      if (!key) return;
 
-    var _original = navigateTo;
-    var _inHook = false; /* Recursion guard */
-
-    navigateTo = function (key) {
-      _original(key);
-
-      /* Prevent re-entry (goToStep → navigateTo → hook → ...) */
-      if (_inHook) return;
-      _inHook = true;
-
-      try {
-        if (key === 'rabbithole') {
-          renderOverview();
-          hideNextBanner();
-          removeCompleteButton();
-          return;
-        }
-
-        /* Init rabbits on every screen change */
-        setTimeout(initRabbits, 100);
-
-        if (!isActive()) {
-          removeCompleteButton();
-          return;
-        }
-
-        var idx = getStepGlobalIndex(key);
-        if (idx === -1) {
-          hideNextBanner();
-          removeCompleteButton();
-          return;
-        }
-
-        /* Show complete button if not yet completed */
-        if (!isStepCompleted(idx)) {
-          setTimeout(function () { injectCompleteButton(key, idx); }, 150);
-          hideNextBanner();
-        } else {
-          /* Already completed — show next banner if applicable */
-          removeCompleteButton();
-          showNextBannerIfNeeded(key);
-        }
-      } finally {
-        _inHook = false;
+      if (key === 'rabbithole') {
+        renderOverview();
+        hideNextBanner();
+        removeCompleteButton();
+        return;
       }
-    };
+
+      /* Init rabbits on every screen change */
+      setTimeout(initRabbits, 100);
+
+      if (!isActive()) {
+        removeCompleteButton();
+        return;
+      }
+
+      var idx = getStepGlobalIndex(key);
+      if (idx === -1) {
+        hideNextBanner();
+        removeCompleteButton();
+        return;
+      }
+
+      if (!isStepCompleted(idx)) {
+        setTimeout(function () { injectCompleteButton(key, idx); }, 150);
+        hideNextBanner();
+      } else {
+        removeCompleteButton();
+        showNextBannerIfNeeded(key);
+      }
+    });
   }
 
   /* Show "Nächste Station" banner only when current module differs from next step */
