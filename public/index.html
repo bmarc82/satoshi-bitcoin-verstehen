@@ -42,7 +42,7 @@
     "@type": "WebApplication",
     "name": "Satoshi — Bitcoin Verstehen",
     "url": "https://btc-klar.ch/",
-    "description": "Interaktive Bitcoin-Bildungsplattform mit 39 Modulen zu Blockchain, Mining, Lightning, Wallets, On-Chain-Analyse und mehr. Kostenlos und auf Deutsch.",
+    "description": "Interaktive Bitcoin-Bildungsplattform mit über 40 Modulen zu Blockchain, Mining, Lightning, Wallets, On-Chain-Analyse, Privacy und mehr. Kostenlos und auf Deutsch.",
     "applicationCategory": "EducationalApplication",
     "operatingSystem": "Web",
     "inLanguage": "de-CH",
@@ -1819,7 +1819,7 @@
 <noscript>
   <div style="max-width:700px;margin:0 auto;padding:40px 20px;font-family:system-ui,sans-serif;color:#e0e0e0;background:#080C10;min-height:100vh">
     <h2 style="color:#F7B731;font-size:1.8rem;margin-bottom:8px">₿ Satoshi — Bitcoin Verstehen</h2>
-    <p style="margin-bottom:24px;line-height:1.6">Die interaktive Bitcoin-Bildungsplattform mit 39 Modulen. Für die volle Funktionalität wird JavaScript benötigt.</p>
+    <p style="margin-bottom:24px;line-height:1.6">Die interaktive Bitcoin-Bildungsplattform mit über 40 Modulen. Für die volle Funktionalität wird JavaScript benötigt.</p>
     <h2 style="color:#F7B731;font-size:1.2rem;margin:20px 0 12px">Module</h2>
     <ul style="list-style:none;line-height:2">
       <li>💰 <strong>Geld & Geschichte</strong> — Was ist Geld und warum verliert es an Wert?</li>
@@ -1890,7 +1890,7 @@
   <div class="hero">
     <span class="hero-icon btc-spin">₿</span>
     <h1 class="shimmer-text">Bitcoin Verstehen</h1>
-    <p>39 Module · Live-Daten · Dein Kompendium</p>
+    <p id="heroSubtitle">44 Module · Live-Daten · Dein Kompendium</p>
   </div>
   <div class="section">
     <div class="section-title"><span class="live-dot"></span>Live Marktdaten</div>
@@ -1922,7 +1922,7 @@
     <div class="section-title">Deine Statistik</div>
     <div class="stats-grid stagger-in">
       <div class="stat-box animate-in">
-        <span class="stat-value" id="homeStatModules">0<small style="font-size:0.5em;color:var(--muted)">/39</small></span>
+        <span class="stat-value" id="homeStatModules">0<small style="font-size:0.5em;color:var(--muted)">/44</small></span>
         <span class="stat-label">Module</span>
       </div>
       <div class="stat-box animate-in">
@@ -12043,7 +12043,7 @@ Bitcoin-Adresse (z.B. 1A1zP1...)</div>
       </div>
       <div class="settings-stat-card">
         <div class="stat-icon">📚</div>
-        <div class="stat-num" id="statModulesVisited">0/39</div>
+        <div class="stat-num" id="statModulesVisited">0/44</div>
         <div class="stat-desc">Module besucht</div>
       </div>
       <div class="settings-stat-card">
@@ -13682,7 +13682,7 @@ Beispiel: Letzte 2'016 Blöcke dauerten nur 12 Tage statt 14
       <div style="display:flex;gap:12px;align-items:flex-start">
         <span style="font-size:1.5rem;flex-shrink:0">📚</span>
         <div>
-          <div class="card-title" style="color:var(--gold);margin-bottom:4px">39 Module</div>
+          <div class="card-title" style="color:var(--gold);margin-bottom:4px">44 Module</div>
           <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7">Von «Was ist Geld?» über «Blockchain» und «Lightning» bis «Bitcoin Weltweit» — lies die Module in beliebiger Reihenfolge. Dein Fortschritt wird automatisch gespeichert. Module sind in 8 Gruppen organisiert: Grundlagen, Technik, Geschichte, Praxis, Wissen, Live, Spiel und System.</p>
         </div>
       </div>
@@ -13703,7 +13703,7 @@ Beispiel: Letzte 2'016 Blöcke dauerten nur 12 Tage statt 14
         <span style="font-size:1.5rem;flex-shrink:0">₿</span>
         <div>
           <div class="card-title" style="color:var(--gold);margin-bottom:4px">Versteckte Satoshis</div>
-          <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7">In 21 Modulen ist jeweils ein <strong>goldenes ₿-Symbol</strong> versteckt. Zusätzlich versteckt sich in <strong>jedem</strong> der 39 Module ein <strong>weisses 🐇 Kaninchen</strong>. Scrolle aufmerksam — manche sind leicht zu finden, andere gut verborgen. Entdeckte Sats landen in deiner Wallet.</p>
+          <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7">In 21 Modulen ist jeweils ein <strong>goldenes ₿-Symbol</strong> versteckt. Zusätzlich versteckt sich in <strong>39 Modulen</strong> (Rabbit-Hole-Curriculum) jeweils ein <strong>weisses 🐇 Kaninchen</strong>. Scrolle aufmerksam — manche sind leicht zu finden, andere gut verborgen. Entdeckte Sats landen in deiner Wallet.</p>
         </div>
       </div>
     </div>
@@ -13713,7 +13713,7 @@ Beispiel: Letzte 2'016 Blöcke dauerten nur 12 Tage statt 14
         <span style="font-size:1.5rem;flex-shrink:0">🐇</span>
         <div>
           <div class="card-title" style="color:var(--gold);margin-bottom:4px">Follow the White Rabbit</div>
-          <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7">Starte die geführte Reise und lass dich durch alle 39 Module leiten — von den Grundlagen bis zum Expertenwissen. Der <strong>Rabbit Button</strong> (🐇) unten rechts zeigt deinen Fortschritt und springt zum nächsten Ziel. Für jedes abgeschlossene Modul erhältst du <strong>1'500'000 Sats</strong>.</p>
+          <p style="color:var(--text);font-size:var(--text-sm);line-height:1.7">Starte die geführte Reise durch das Rabbit-Hole-Curriculum — 39 sorgfältig ausgewählte Module von den Grundlagen bis zum Expertenwissen. Der <strong>Rabbit Button</strong> (🐇) unten rechts zeigt deinen Fortschritt und springt zum nächsten Ziel. Für jedes abgeschlossene Modul erhältst du <strong>1'500'000 Sats</strong>.</p>
         </div>
       </div>
     </div>
@@ -13777,7 +13777,7 @@ Beispiel: Letzte 2'016 Blöcke dauerten nur 12 Tage statt 14
         <span style="color:var(--gold)">23:00–04:00</span><span>Nachts aktiv? Ein Geheimnis wartet auf Nachteulen</span>
         <span style="color:var(--gold)">₿ Symbole</span><span>Versteckte Satoshis findest du überall in den Modulen — halte Ausschau!</span>
         <span style="color:var(--gold)">Quiz</span><span>Jedes Modul hat Quizfragen — richtige Antworten bringen Sats</span>
-        <span style="color:var(--gold)">Alle Module</span><span>Schliesse alle 39 Module ab und erhalte ein besonderes Achievement</span>
+        <span style="color:var(--gold)">Alle Module</span><span>Schliesse alle Inhalts-Module ab und erhalte ein besonderes Achievement</span>
         <span style="color:var(--gold)">Anleitung</span><span>Schon das Lesen dieser Seite wird belohnt 😉</span>
         <span style="color:var(--gold)">Swipe ←→</span><span>Wische links/rechts um zwischen Modulen zu navigieren</span>
         <span style="color:var(--gold)">Zum Home</span><span>Tippe auf das Logo oder nutze die Navigation unten</span>
@@ -16785,6 +16785,9 @@ function updateProgressTracker() {
   var total = MODULES.filter(function(m) { return excludeKeys.indexOf(m.key) === -1; }).length;
   var visited = visitedModules.filter(function(k) { return excludeKeys.indexOf(k) === -1 && validKeys.indexOf(k) !== -1; }).length;
   var pct = Math.min(100, Math.round((visited / total) * 100));
+  // Hero-Subtitle dynamisch — bleibt in sync mit Modulanzahl
+  var heroSub = document.getElementById('heroSubtitle');
+  if (heroSub) heroSub.textContent = total + ' Module · Live-Daten · Dein Kompendium';
   var circle = document.getElementById('progressCircle');
   var pctEl = document.getElementById('progressPct');
   var labelEl = document.getElementById('progressLabel');
@@ -18346,13 +18349,21 @@ function linkifyScreen(screen) {
       var p = node.parentElement;
       while (p && p !== screen) {
         if (EXCLUDED_TAGS.test(p.tagName)) return NodeFilter.FILTER_REJECT;
+        // KRITISCH: Elemente mit onclick-Attribut nicht linkifyen.
+        // Sonst würde ein Klick auf einen Glossar-Link gleichzeitig
+        // den onclick des Eltern-Containers (z. B. data-action="goto-step")
+        // triggern → unerwarteter Navigationssprung.
+        if (p.hasAttribute && p.hasAttribute('onclick')) return NodeFilter.FILTER_REJECT;
         if (p.classList && (
           p.classList.contains('glossary-link') ||
           p.classList.contains('iq-feedback') ||
           p.classList.contains('hidden-rabbit') ||
           p.classList.contains('hidden-sat') ||
           p.classList.contains('continue-btn-wrap') ||
-          p.classList.contains('section-title')
+          p.classList.contains('section-title') ||
+          p.classList.contains('module-card') ||
+          p.classList.contains('rabbit-home-card') ||
+          p.classList.contains('recent-chip')
         )) return NodeFilter.FILTER_REJECT;
         p = p.parentElement;
       }
@@ -18401,17 +18412,21 @@ function linkifyScreen(screen) {
     textNode.parentNode.replaceChild(fragment, textNode);
   });
 
-  // Click-Handler nur einmal pro Screen
+  // Click-Handler nur einmal pro Screen.
+  // CAPTURE-Phase, damit der Handler VOR allen onclick-Handlern läuft.
+  // stopImmediatePropagation verhindert, dass weitere Handler auf dem
+  // Pfad zum target feuern → keine Doppel-Navigation.
   if (!screen._glossaryHandlerAttached) {
     screen._glossaryHandlerAttached = true;
     screen.addEventListener('click', function(e) {
-      var link = e.target.closest('.glossary-link');
+      var link = e.target.closest && e.target.closest('.glossary-link');
       if (link && link.dataset.lexTerm) {
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
         openLexikonTerm(link.dataset.lexTerm);
       }
-    });
+    }, true); // ← capture phase
   }
 }
 
