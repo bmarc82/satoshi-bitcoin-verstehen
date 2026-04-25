@@ -12262,6 +12262,31 @@ Bitcoin-Adresse (z.B. 1A1zP1...)</div>
     </div>
   </div>
 
+  <!-- App-Update prüfen -->
+  <div class="section">
+    <div class="section-title">🔄 App-Update prüfen</div>
+    <div class="card">
+      <p style="color:var(--muted);font-size:var(--text-sm);line-height:1.6;margin-bottom:14px">
+        Die App prüft normalerweise alle 30 Minuten automatisch auf Updates. Hier kannst du sofort prüfen, ob auf dem Server eine neuere Version liegt.
+      </p>
+      <div style="background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:10px 12px;margin-bottom:12px">
+        <p style="font-size:var(--text-xs);color:#4ade80;line-height:1.5">
+          🔒 <strong>Dein Fortschritt bleibt erhalten</strong> — Sats, besuchte Module, Quiz-Antworten, Achievements, Streaks und Checklisten überleben jedes Update unverändert. Sie liegen lokal in deinem Browser, getrennt vom App-Code.
+        </p>
+      </div>
+      <div style="font-size:var(--text-xs);color:var(--muted);margin-bottom:10px;font-family:var(--font-mono)">
+        Aktuell installiert: <strong style="color:var(--gold)" id="manualUpdateVersion">v—</strong>
+      </div>
+      <button type="button" id="manualUpdateBtn" class="reset-btn-gold" onclick="checkForUpdatesManually()" style="width:100%">
+        🔄 Auf Updates prüfen
+      </button>
+      <p id="manualUpdateStatus" style="margin-top:10px;font-size:var(--text-sm);min-height:1.4em;line-height:1.5"></p>
+      <p style="font-size:var(--text-xs);color:var(--muted);margin-top:8px;line-height:1.5;font-style:italic">
+        Falls eine neue Version gefunden wird, lädt die App nach kurzer Wartezeit automatisch neu — kein manueller Reload nötig.
+      </p>
+    </div>
+  </div>
+
   <!-- Lokales Error-Log -->
   <div class="section">
     <div class="section-title">🩺 Diagnose</div>
@@ -14120,6 +14145,7 @@ const CHANGELOG = [
       { type: 'neu', text: 'Wiki-Gap Phase 2: Angriffsvektoren in netzwerk (51%, Sybil, Eclipse — was sie sind und warum sie scheitern), Difficulty einfach erklärt + Mining-Pool-Ökonomie + Stratum-V2 in mining, 2-of-3-Multisig-Vertiefung in sicherheit (Erbschafts-Setup, Tools, wann lohnt es sich), Fidelity-Bonds-Mini-Erklärung in privacy (JoinMarket-Anti-Sybil)' },
       { type: 'neu', text: 'Glossar-Cross-Linking — 45 kuratierte Bitcoin-Begriffe werden in Modul-Texten automatisch klickbar (gestrichelte goldene Unterstreichung). Klick öffnet Lexikon mit Sprung zum Begriff + Glow-Highlight. Pro Modul wird nur die erste Vorkommnis verlinkt, false matches durch Word-Boundaries und Tag-Exclusion vermieden' },
       { type: 'verbessert', text: 'Repo-Reorganisation für Production-Deploy: /public/ enthält Document-Root-Artifacts, /server/ die nginx-Konfig, /scripts/ die Build-Tools (check.js + dev-server.js), /content-sources/ + /dev-notes/ gitignored. Neuer DEPLOYMENT.md mit Step-by-Step-Anleitung; package.json mit npm-Skripten' },
+      { type: 'neu', text: 'Manueller Update-Check in Einstellungen — «🔄 Auf Updates prüfen»-Button forciert Server-Anfrage (umgeht HTTP-Cache), zeigt aktuell installierte Version, gibt klares Feedback bei Update-Fund / aktueller Version / Offline. Fortschritt bleibt bei jedem Update erhalten' },
       { type: 'neu', text: 'Persistente Checklisten — Häkchen werden lokal gespeichert, kein Server, kein Tracking' },
       { type: 'neu', text: 'History-API-Routing — jedes Modul hat eigene URL (z. B. /lightning, /bitcoin-schweiz). Browser-Zurück, Direktlinks und Bookmarks funktionieren' },
       { type: 'neu', text: 'Lesedauer-Badges — automatisch berechnet aus dem Modul-Inhalt (200 Wörter/Min)' },
@@ -17551,9 +17577,15 @@ document.getElementById('installDismiss').addEventListener('click', function() {
 // ║  SERVICE WORKER & UPDATE DETECTION        ║
 // ╚══════════════════════════════════════════╝
 
+/* Globaler Reference auf die SW-Registrierung — wird vom manuellen
+ * «Auf Updates prüfen»-Button in den Einstellungen verwendet. */
+var _swRegistration = null;
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').then(function(reg) {
-    // Check for updates every 30 minutes
+    _swRegistration = reg;
+
+    // Auto-Check alle 30 Minuten während die App offen ist
     setInterval(function() { reg.update(); }, 30 * 60 * 1000);
 
     // Detect new service worker waiting
@@ -17586,15 +17618,120 @@ function showUpdateBanner() {
 function applyUpdate() {
   var banner = document.getElementById('updateBanner');
   if (banner) banner.classList.remove('show');
-  if (navigator.serviceWorker.controller) {
-    navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
-  }
+  // Wenn ein wartender SW vorhanden ist (häufiger Fall): direkt
+  // SKIP_WAITING an ihn schicken. Sonst (z. B. durch manuellen Check
+  // ohne Banner): an aktiven Controller senden.
+  var target = (_swRegistration && _swRegistration.waiting) || navigator.serviceWorker.controller;
+  if (target) target.postMessage({ type: 'SKIP_WAITING' });
 }
 
 function dismissUpdate() {
   var banner = document.getElementById('updateBanner');
   if (banner) banner.classList.remove('show');
 }
+
+/* Manueller Update-Check — vom Button in Einstellungen aus aufgerufen.
+ * Workflow:
+ *   1. reg.update() → forciert Server-Anfrage (HTTP-Cache wird umgangen)
+ *   2. Wenn waiting-SW existiert → User-Feedback + automatisch Banner
+ *   3. Sonst kurze Wartezeit auf updatefound-Event
+ *   4. Falls keine Änderung gefunden → "App ist aktuell"-Feedback
+ *
+ * localStorage-Daten (Sats, Module-Fortschritt, Achievements, Pfade,
+ * Quiz, Checklisten, Streak) bleiben bei jedem Update erhalten —
+ * SW-Update-Mechanismus berührt nur Code-Caches, keine User-Daten. */
+function checkForUpdatesManually() {
+  var statusEl = document.getElementById('manualUpdateStatus');
+  var btn = document.getElementById('manualUpdateBtn');
+  if (!statusEl || !btn) return;
+
+  if (!('serviceWorker' in navigator)) {
+    statusEl.innerHTML = '<span style="color:var(--red)">Browser unterstützt keine Service Worker — manuelles Update nicht möglich.</span>';
+    return;
+  }
+  if (!navigator.onLine) {
+    statusEl.innerHTML = '<span style="color:var(--red)">⚡ Offline — bitte später erneut versuchen.</span>';
+    return;
+  }
+
+  btn.disabled = true;
+  var origHtml = btn.innerHTML;
+  btn.innerHTML = '⏳ Suche nach Updates …';
+  statusEl.innerHTML = '<span style="color:var(--muted)">Server wird angefragt …</span>';
+
+  // Wenn SW noch nicht registriert (sehr früh nach Page-Load),
+  // versuchen wir zu warten, sonst Fallback
+  var regPromise = _swRegistration
+    ? Promise.resolve(_swRegistration)
+    : navigator.serviceWorker.getRegistration();
+
+  regPromise.then(function(reg) {
+    if (!reg) {
+      throw new Error('Keine Service-Worker-Registrierung gefunden');
+    }
+    // Falls schon eine wartende neue Version existiert → direkt aktivieren
+    if (reg.waiting) {
+      statusEl.innerHTML = '<span style="color:var(--gold)">✓ Update bereit — wird in 1 Sekunde aktiviert …</span>';
+      setTimeout(function() {
+        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }, 1000);
+      return;
+    }
+
+    // reg.update() forciert eine fresh fetch von sw.js (umgeht HTTP-Cache)
+    return reg.update().then(function() {
+      // Nach update(): warte kurz auf installing/waiting-State
+      return new Promise(function(resolve) {
+        var timeout = setTimeout(function() { resolve('no-update'); }, 4000);
+
+        function checkState() {
+          if (reg.installing) {
+            // SW lädt — warte auf installed-State
+            reg.installing.addEventListener('statechange', function() {
+              if (reg.installing && reg.installing.state === 'installed') {
+                clearTimeout(timeout);
+                resolve('installed');
+              }
+            });
+            return true;
+          }
+          if (reg.waiting) {
+            clearTimeout(timeout);
+            resolve('waiting');
+            return true;
+          }
+          return false;
+        }
+        if (!checkState()) {
+          // Polling für Fälle, wo updatefound noch nicht gefeuert hat
+          var pollInterval = setInterval(function() {
+            if (checkState()) clearInterval(pollInterval);
+          }, 200);
+          setTimeout(function() { clearInterval(pollInterval); }, 4000);
+        }
+      });
+    });
+  }).then(function(result) {
+    btn.disabled = false;
+    btn.innerHTML = origHtml;
+    if (result === 'installed' || result === 'waiting') {
+      statusEl.innerHTML = '<span style="color:var(--green)">✓ Neue Version gefunden! Wird in 2 Sekunden aktiviert …</span>';
+      setTimeout(function() {
+        if (_swRegistration && _swRegistration.waiting) {
+          _swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+      }, 2000);
+    } else {
+      statusEl.innerHTML = '<span style="color:var(--green)">✓ App ist aktuell (v' + APP_VERSION + ', ' + APP_BUILD + ')</span>';
+    }
+  }).catch(function(err) {
+    btn.disabled = false;
+    btn.innerHTML = origHtml;
+    statusEl.innerHTML = '<span style="color:var(--red)">⚠ Fehler beim Update-Check: ' + (err.message || 'unbekannt') + '</span>';
+    if (typeof logLocalError === 'function') logLocalError('update-check', err.message || String(err));
+  });
+}
+window.checkForUpdatesManually = checkForUpdatesManually;
 
 // Check if user saw this version's changelog
 (function checkVersionNotice() {
@@ -18563,6 +18700,14 @@ function renderSettings() {
   el = document.getElementById('statHiddenFound'); if (el) el.textContent = hiddenFound + '/' + totalHidden;
   el = document.getElementById('statSecrets'); if (el) el.textContent = secretsFound + '/' + totalSecrets;
   el = document.getElementById('statTimeSpent'); if (el) el.textContent = formatTime(appStats.totalTimeSeconds);
+
+  // Update-Modul-Versionsanzeige
+  el = document.getElementById('manualUpdateVersion');
+  if (el) el.textContent = 'v' + APP_VERSION + ' · Build ' + APP_BUILD;
+  // Status-Feld initial leeren (vorheriger Check-Status soll nicht
+  // bei erneutem Settings-Besuch noch angezeigt werden)
+  var statusEl = document.getElementById('manualUpdateStatus');
+  if (statusEl) statusEl.innerHTML = '';
 
   // App-Statistiken
   el = document.getElementById('statAppVersion'); if (el) el.textContent = 'v' + APP_VERSION;
