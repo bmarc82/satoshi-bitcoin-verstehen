@@ -1,12 +1,32 @@
 # ──────────────────────────────────────────────────────────────
-#  Satoshi PWA — Apache Configuration
+#  Satoshi PWA — Apache .htaccess
+#  Optimiert für Shared-Hosting hinter Reverse-Proxy (Hostpoint, Cyon
+#  etc.) sowie Standard-Apache. Vermeidet Redirect-Loops via doppelter
+#  HTTPS-Erkennung (direkt + X-Forwarded-Proto).
 # ──────────────────────────────────────────────────────────────
 
-# ── HTTPS Redirect ───────────────────────────────────────────
 <IfModule mod_rewrite.c>
   RewriteEngine On
+
+  # ── HTTPS Redirect (proxy-aware) ─────────────────────────────
+  # Bei Reverse-Proxy ist %{HTTPS} immer "off" — wir prüfen ZUSÄTZLICH
+  # den X-Forwarded-Proto-Header. Beide Bedingungen müssen "kein
+  # HTTPS" sein, damit umgeleitet wird → keine Loop bei Proxy-Hosting.
+  # Falls dein Hoster (z. B. Hostpoint) HTTPS-Redirect bereits im
+  # Panel aktiviert hat, kannst du diesen Block auskommentieren.
   RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteCond %{HTTP_HOST} !=localhost
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # ── SPA-Fallback ─────────────────────────────────────────────
+  # History-API-Routing: /blockchain, /lightning etc. existieren als
+  # echte Files NICHT — sie müssen index.html liefern, damit das
+  # Client-Side-Routing greift.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !^/icons/
+  RewriteRule ^ /index.html [L]
 </IfModule>
 
 # ── Security Headers ────────────────────────────────────────
@@ -14,37 +34,45 @@
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "DENY"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://platform.twitter.com https://cloud.umami.is; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https:; connect-src 'self' https://api.blockchain.info https://blockchain.info https://api.coingecko.com https://mempool.space https://api.alternative.me https://api.codetabs.com https://api.allorigins.win https://cloud.umami.is; frame-src https://platform.twitter.com https://www.youtube.com https://btcmap.org https://bitcoindeaths.com; manifest-src 'self';"
+  Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://platform.twitter.com https://cloud.umami.is; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https:; connect-src 'self' https://api.blockchain.info https://blockchain.info https://api.coingecko.com https://mempool.space https://api.alternative.me https://api.codetabs.com https://api.allorigins.win https://cloud.umami.is; frame-src https://platform.twitter.com https://www.youtube.com https://btcmap.org https://bitcoindeaths.com; manifest-src 'self'; worker-src 'self';"
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
 </IfModule>
 
-# ── Caching Rules ───────────────────────────────────────────
+# ── Cache-Control ────────────────────────────────────────────
 <IfModule mod_expires.c>
   ExpiresActive On
-
-  # Static assets — 1 year
   ExpiresByType image/png                 "access plus 1 year"
   ExpiresByType image/svg+xml             "access plus 1 year"
   ExpiresByType image/x-icon              "access plus 1 year"
   ExpiresByType text/css                  "access plus 1 year"
-  ExpiresByType application/javascript    "access plus 1 year"
-  ExpiresByType application/json          "access plus 1 year"
   ExpiresByType font/woff2                "access plus 1 year"
   ExpiresByType font/woff                 "access plus 1 year"
-
-  # HTML — no cache
+  # HTML, JSON, JS NICHT 1 Jahr cachen — Service-Worker-Updates
+  # müssen ankommen können.
   ExpiresByType text/html                 "access plus 0 seconds"
+  ExpiresByType application/json          "access plus 0 seconds"
 </IfModule>
 
 <IfModule mod_headers.c>
-  # HTML — always revalidate
+  # HTML — immer revalidieren (damit neues SW-Update gefunden wird)
   <FilesMatch "\.(html)$">
     Header set Cache-Control "no-cache, must-revalidate"
   </FilesMatch>
 
-  # Service Worker — never cache
+  # Service Worker — niemals cachen, sonst kommen Updates nie an
   <FilesMatch "sw\.js$">
     Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+  </FilesMatch>
+
+  # rabbit-hole.js — immer revalidieren
+  <FilesMatch "rabbit-hole\.js$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+
+  # manifest.json — immer revalidieren (PWA-Identität-Updates)
+  <FilesMatch "manifest\.json$">
+    Header set Cache-Control "no-cache, must-revalidate"
   </FilesMatch>
 </IfModule>
 
@@ -58,3 +86,10 @@
   AddOutputFilterByType DEFLATE font/woff
   AddOutputFilterByType DEFLATE font/woff2
 </IfModule>
+
+# ── Versteckte Dateien blockieren ──────────────────────────
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
+# Ausnahme: .htaccess selbst wird automatisch von Apache geschützt,
+# .well-known/ wird für Let's-Encrypt etc. unter Hostpoint-Panel verwaltet.
