@@ -36,6 +36,7 @@
   <link rel="dns-prefetch" href="https://api.blockchain.info">
   <link rel="dns-prefetch" href="https://mempool.space">
   <link rel="dns-prefetch" href="https://api.alternative.me">
+  <!-- JSON-LD #1: WebApplication (App-Identität) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -55,7 +56,7 @@
     },
     "author": {
       "@type": "Organization",
-      "name": "BIT Solutions",
+      "name": "BITS - Bühler IT Solutions GmbH",
       "url": "https://btc-klar.ch/"
     },
     "educationalLevel": "Beginner to Advanced",
@@ -65,6 +66,135 @@
       "sameAs": "https://de.wikipedia.org/wiki/Bitcoin"
     },
     "keywords": "Bitcoin, Blockchain, Kryptowährung, Mining, Lightning Network, Wallet, Bitcoin Schweiz, Satoshi Nakamoto"
+  }
+  </script>
+
+  <!-- JSON-LD #2: Course (für Google Rich-Results bei Bildungs-Suchen) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": "Bitcoin verstehen — kostenloser Online-Kurs auf Deutsch",
+    "description": "Über 40 Module Bitcoin-Bildung: von der Geschichte des Geldes über Blockchain-Technik, Self-Custody, Lightning Network, Privacy bis zu Schweizer Steuerrecht. Mit Quiz, Lernpfaden und versteckten Belohnungen.",
+    "provider": {
+      "@type": "Organization",
+      "name": "Satoshi — Bitcoin Verstehen",
+      "sameAs": "https://btc-klar.ch/"
+    },
+    "inLanguage": "de-CH",
+    "isAccessibleForFree": true,
+    "courseCode": "BTC-KLAR-101",
+    "educationalLevel": "Beginner to Advanced",
+    "teaches": [
+      "Bitcoin-Grundlagen",
+      "Blockchain-Technologie",
+      "Mining und Proof of Work",
+      "Lightning Network",
+      "Self-Custody und Wallet-Sicherheit",
+      "Bitcoin in der Schweiz",
+      "Privacy und CoinJoin",
+      "Schweizer Steuerrecht für Bitcoin"
+    ],
+    "hasCourseInstance": {
+      "@type": "CourseInstance",
+      "courseMode": "online",
+      "courseWorkload": "PT15H",
+      "inLanguage": "de-CH"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "CHF",
+      "availability": "https://schema.org/InStock",
+      "category": "Free"
+    }
+  }
+  </script>
+
+  <!-- JSON-LD #3: BreadcrumbList (Navigation-Hierarchie für Google) -->
+  <script type="application/ld+json" id="breadcrumbSchema">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Satoshi", "item": "https://btc-klar.ch/" }
+    ]
+  }
+  </script>
+
+  <!-- JSON-LD #4: FAQPage (für Google FAQ Rich-Results) — speist aus den
+       10 häufigsten Bitcoin-Mythen aus dem Kritik-Modul. Nur Q&A-Paare,
+       die wirklich beantwortbar sind und User suchen. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Wird Bitcoin hauptsächlich für kriminelle Zwecke genutzt?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Nein. Studien zeigen weniger als 1–2 % aller Bitcoin-Transaktionen mit illegalen Aktivitäten. Bei klassischem Bargeld liegt der Anteil bei 2–5 %. Da die Blockchain öffentlich ist, ist Bitcoin sogar schlechter für Kriminelle geeignet als Bargeld."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Ist Bitcoin anonym?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Nein, Bitcoin ist pseudonym, nicht anonym. Jede Transaktion ist öffentlich auf der Blockchain sichtbar — Absender, Empfänger und Betrag. Wer einer Adresse einmal zugeordnet wird, ist identifizierbar."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Verbraucht Bitcoin zu viel Energie?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Bitcoin verbraucht 2026 ca. 150 TWh/Jahr. Im Vergleich: Goldabbau ~265 TWh, Bankensystem ~260 TWh, Streaming weltweit ~200 TWh. Ein wachsender Anteil läuft auf erneuerbarer und überschüssiger Energie. Der Verbrauch sichert das Netzwerk durch Proof of Work."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Kann der Staat Bitcoin verbieten?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Staaten können Börsen, Banken und Mining regulieren. Das Bitcoin-Netzwerk selbst kann aber nicht abgeschaltet werden, solange es Strom und Internet gibt. China hat Bitcoin mehrfach 'verboten' — das Netzwerk lief jedes Mal ungestört weiter."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Wie viele Bitcoin gibt es maximal?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Maximal 21 Millionen Bitcoin. Diese Obergrenze ergibt sich mathematisch aus dem Halving-Mechanismus: 50 BTC pro Block, alle 210'000 Blöcke halbiert. Die geometrische Reihe konvergiert exakt gegen 21 Mio. Der letzte Bitcoin wird voraussichtlich 2140 gemined."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Wie kaufe ich Bitcoin in der Schweiz sicher?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Schweizer Anbieter mit Self-Custody: Relai, Pocket oder Bittr (DCA-fokussiert). Für grössere Beträge: Bitcoin Suisse oder Kraken (KYC, hohe Liquidität). Für Anfänger: erst 50–100 CHF testen, dann an eigene Wallet senden, schliesslich Hardware-Wallet anschaffen."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Sind private Bitcoin-Kapitalgewinne in der Schweiz steuerfrei?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Ja, private Kapitalgewinne aus Bitcoin sind in der Schweiz grundsätzlich steuerfrei. Bitcoin muss als Vermögen im Wertschriftenverzeichnis deklariert werden (Stichtag 31.12.). Bei gewerbsmässigem Handel oder Mining-Erträgen kann eine andere Behandlung gelten. Keine Steuerberatung."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Was bedeutet 'Not your keys, not your coins'?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Wer die privaten Schlüssel (Seed Phrase) seiner Bitcoin nicht selbst kontrolliert, hat keine echte Verfügungsgewalt über sie. Bitcoin auf Börsen oder Custodial-Wallets gehört technisch dem Anbieter — bei Hack, Insolvenz oder Kontosperrung sind die Coins weg. Self-Custody mit Hardware-Wallet ist der Goldstandard."
+        }
+      }
+    ]
   }
   </script>
   <!-- Analytics: wird dynamisch geladen falls SITE_CONFIG.umamiId gesetzt ist -->
@@ -3842,16 +3972,10 @@
         </table>
       </div>
     </div>
-    <div class="card animate-in" style="margin-top:12px">
-      <div class="card-title">💡 Cantillon-Effekt</div>
-      <p style="line-height:1.7;font-size:var(--text-sm)">
-        Wenn neue Geldmenge ins System kommt, fliesst sie zuerst zu <strong>Banken, Staaten und grossen Institutionen</strong>. Diese können damit Vermögenswerte (Immobilien, Aktien) kaufen, bevor die Preise steigen.
-      </p>
-      <p style="margin-top:8px;line-height:1.7;font-size:var(--text-sm)">
-        Menschen mit Bargeld oder Ersparnissen merken die Inflation erst später — ihre Kaufkraft ist dann bereits gesunken. Wer dem Geldhahn am nächsten ist, profitiert am meisten.
-      </p>
-    </div>
   </div>
+
+  <!-- Cantillon-Effekt war hier doppelt — vollständige Erklärung steht
+       weiter oben in derselben Sektion («Cantillon-Effekt — visualisiert»). -->
 
   <!-- Inline Quiz: Inflation -->
   <div class="section">
@@ -3988,7 +4112,7 @@
 
     <div class="card animate-in">
       <div class="card-title" style="color:var(--gold)">Cantillon-Effekt</div>
-      <p style="color:var(--text);line-height:1.7">Neues Geld fliesst nicht gleichmässig in die Wirtschaft. Wer es <strong>zuerst</strong> erhält (Banken, Staaten), profitiert — wer es zuletzt erreicht (Arbeiter, Sparer), bezahlt die Zeche durch gestiegene Preise. Bitcoin eliminiert den Cantillon-Effekt: Neue BTC entstehen durch <a href="#" onclick="event.preventDefault();navigateTo('blockchain')" style="color:var(--gold)">Proof of Work</a> — erreichbar für jeden. → <a href="#" onclick="event.preventDefault();navigateTo('inflation')" style="color:var(--gold)">Cantillon-Effekt im Detail</a></p>
+      <p style="color:var(--text);line-height:1.7"><strong>Wer neues Geld zuerst erhält, profitiert am meisten.</strong> Banken und Staaten kaufen damit Vermögenswerte, bevor die Preise steigen. Bitcoin eliminiert diesen Effekt: neue BTC entstehen durch <a href="#" onclick="event.preventDefault();navigateTo('blockchain')" style="color:var(--gold)">Proof of Work</a> — erreichbar für jeden Miner weltweit, kein bevorzugter Erstempfänger. → <a href="#" onclick="event.preventDefault();navigateTo('inflation')" style="color:var(--gold)">Vollständige Erklärung mit Visualisierung im Modul Inflation</a></p>
     </div>
 
     <div class="card animate-in">
@@ -7322,7 +7446,7 @@ Bitcoin-Adresse (z.B. 1A1zP1...)</div>
       <table>
         <thead><tr><th>Aspekt</th><th>Pro</th><th>Contra</th></tr></thead>
         <tbody>
-          <tr><td>Adoption</td><td class="green">Erstes Land mit BTC als Legal Tender</td><td class="red">Geringe Nutzung im Alltag (~20%)</td></tr>
+          <tr><td>Adoption</td><td class="green">Erstes Land mit BTC als Legal Tender</td><td class="red">Laut BIS-Studie 2024 unter 12 % regelmässige Nutzer</td></tr>
           <tr><td>Tourismus</td><td class="green">+95% Anstieg seit 2021</td><td class="muted">Schwer messbar, ob BTC-bedingt</td></tr>
           <tr><td>Finanzen</td><td class="green">BTC-Reserve im Plus</td><td class="red">IWF-Druck, Kreditrating gesenkt</td></tr>
           <tr><td>Innovation</td><td class="green">Vulkan-Mining, Bitcoin City geplant</td><td class="red">Bitcoin Bonds verzögert</td></tr>
@@ -11372,7 +11496,7 @@ Bitcoin-Adresse (z.B. 1A1zP1...)</div>
         <li><strong style="color:var(--gold)">Erster Lightning-Kauf:</strong> 2018 bezahlte ein Nutzer einen Artikel bei TorGuard VPN über Lightning — die erste dokumentierte Lightning-Zahlung für eine echte Ware.</li>
         <li><strong style="color:var(--gold)">Bitcoin im All:</strong> 2016 wurde die erste Bitcoin-Transaktion über einen Satelliten gesendet (Blockstream Satellite). Seither kann man Bitcoin empfangen, ohne Internet.</li>
         <li><strong style="color:var(--gold)">Über 400 Todeserklärungen:</strong> Die Website «Bitcoin Obituaries» zählt über 400 Medienartikel, die Bitcoin für tot erklärt haben. Der Kurs ist seitdem jedes Mal wieder gestiegen.</li>
-        <li><strong style="color:var(--gold)">MicroStrategy / Strategy:</strong> Michael Saylors Unternehmen begann 2020 Bitcoin als Treasury-Reserve zu kaufen. Ende 2024 bereits über 250'000 BTC, 2025 nach mehreren Nachkäufen über 400'000 BTC — mehr als viele Nationalstaaten und der grösste Corporate-Holder weltweit. Firma 2025 in «Strategy» umbenannt.</li>
+        <li><strong style="color:var(--gold)">MicroStrategy / Strategy:</strong> Michael Saylors Unternehmen begann 2020 Bitcoin als Treasury-Reserve zu kaufen. Aktueller Bestand: über 500'000 BTC — grösster Corporate-Holder weltweit. Firma 2025 in «Strategy» umbenannt. → <a href="javascript:void(0)" onclick="navigateTo('institutionen')" style="color:var(--gold)">Aktuelle Bestände in Institutionen</a></li>
       </ul>
     </div>
   </div>
@@ -14146,6 +14270,12 @@ const CHANGELOG = [
       { type: 'neu', text: 'Glossar-Cross-Linking — 45 kuratierte Bitcoin-Begriffe werden in Modul-Texten automatisch klickbar (gestrichelte goldene Unterstreichung). Klick öffnet Lexikon mit Sprung zum Begriff + Glow-Highlight. Pro Modul wird nur die erste Vorkommnis verlinkt, false matches durch Word-Boundaries und Tag-Exclusion vermieden' },
       { type: 'verbessert', text: 'Repo-Reorganisation für Production-Deploy: /public/ enthält Document-Root-Artifacts, /server/ die nginx-Konfig, /scripts/ die Build-Tools (check.js + dev-server.js), /content-sources/ + /dev-notes/ gitignored. Neuer DEPLOYMENT.md mit Step-by-Step-Anleitung; package.json mit npm-Skripten' },
       { type: 'neu', text: 'Manueller Update-Check in Einstellungen — «🔄 Auf Updates prüfen»-Button forciert Server-Anfrage (umgeht HTTP-Cache), zeigt aktuell installierte Version, gibt klares Feedback bei Update-Fund / aktueller Version / Offline. Fortschritt bleibt bei jedem Update erhalten' },
+      { type: 'fix', text: 'Touch-Navigations-Sprünge behoben: globale Swipe-Geste deaktiviert, die bei vertikalem Scrollen mit minimaler horizontaler Drift fälschlich Modul-Wechsel auslöste' },
+      { type: 'fix', text: 'Apache .htaccess für Shared-Hosting hinter Reverse-Proxy korrigiert (Hostpoint): HTTPS-Redirect prüft jetzt zusätzlich X-Forwarded-Proto-Header → kein Redirect-Loop mehr; SPA-Fallback ergänzt' },
+      { type: 'verbessert', text: 'Modul-Counter konsistent: Hero-Subtitle dynamisch via updateProgressTracker, alle hardcoded "39 Module" in Anleitung/JSON-LD/noscript auf aktuelle Anzahl bzw. "über 40 Module" angepasst' },
+      { type: 'fix', text: 'Glossar-Cross-Linking: Klicks auf verlinkte Begriffe in onclick-Containern (Modul-Karten, Lernpfad-Karten) führen nicht mehr zu Doppel-Navigation. Capture-Phase-Listener + onclick-Element-Exclusion' },
+      { type: 'verbessert', text: 'Inhalts-Redundanzen reduziert: MicroStrategy-Bestand harmonisiert (über 500\'000 BTC, Strategy 2025), Cantillon-Effekt-Doppelung aus Inflation entfernt, Oekonomie-Cantillon auf Teaser+Link gekürzt, El-Salvador-BIS-Studie-2024-Caveat in Weltweit ergänzt' },
+      { type: 'verbessert', text: 'SEO-Vertiefung: Pro-Modul Meta-Description (48 kuratierte Texte mit Keywords), pro-Modul Open-Graph + Twitter-Card-Updates, neues JSON-LD Course-Schema (BTC-KLAR-101), JSON-LD BreadcrumbList dynamisch pro Navigation, JSON-LD FAQPage mit 8 Q&A für Google-Rich-Results' },
       { type: 'neu', text: 'Persistente Checklisten — Häkchen werden lokal gespeichert, kein Server, kein Tracking' },
       { type: 'neu', text: 'History-API-Routing — jedes Modul hat eigene URL (z. B. /lightning, /bitcoin-schweiz). Browser-Zurück, Direktlinks und Bookmarks funktionieren' },
       { type: 'neu', text: 'Lesedauer-Badges — automatisch berechnet aus dem Modul-Inhalt (200 Wörter/Min)' },
@@ -15037,17 +15167,135 @@ function pathToKey(pathname) {
   var found = MODULES.find(function(m) { return m.key === seg; });
   return found ? found.key : 'home';
 }
+/* Pro-Modul Meta-Descriptions für Suchmaschinen + Social-Sharing.
+ * Jede Beschreibung ist 120-160 Zeichen lang (Google-Snippet-Optimum)
+ * und enthält Keywords, die deutsche Bitcoin-Sucher tatsächlich nutzen.
+ * Fallback: aus mod.desc + Standard-Suffix. */
+const MODULE_SEO_DESCRIPTIONS = {
+  'home':            'Lerne Bitcoin Schritt für Schritt — über 40 Module, Live-Daten, Quiz und Lernpfade. Kostenlos, werbefrei, auf Deutsch.',
+  'geld':            'Was ist Geld? Geschichte des Geldes von Tauschhandel über Gold bis Fiat. Warum Bitcoin als hartes Geld der nächste logische Schritt ist.',
+  'inflation':       'Inflation und Kaufkraftverlust verstehen: USD verlor seit 1971 96%, CHF 75%. Cantillon-Effekt, Gelddruck und warum Bitcoin Schutz bietet.',
+  'oekonomie':       'Bitcoin-Ökonomie: Spieltheorie, Stock-to-Flow, Sound Money, Österreichische Schule. Warum Knappheit den Wert macht.',
+  'analogien':       'Bitcoin verstehen über Analogien: TCP/IP des Geldes, Luther und Buchdruck. Vergleiche, die das Konzept fassbar machen.',
+  'psychologie':     'Bitcoin-Psychologie: Unit Bias, Recency Bias, Geldillusion, FOMO. Welche Denkfehler dich beim Investieren bremsen — und wie du sie überwindest.',
+  'blockchain':      'Wie funktioniert die Bitcoin-Blockchain? UTXO-Modell, Byzantinisches Generals-Problem, Mining, Live-Daten. Technik einfach erklärt.',
+  'whitepaper':      'Satoshi Nakamotos Bitcoin-Whitepaper von 2008 — alle 12 Kapitel auf Deutsch erklärt. Das Original-Dokument, das Bitcoin definiert.',
+  'krypto':          'Kryptographie hinter Bitcoin: SHA-256, ECDSA, elliptische Kurven, Cypherpunks-Bewegung. Wie Mathematik Vertrauen ersetzt.',
+  'mining':          'Bitcoin-Mining erklärt: Proof of Work, Difficulty-Anpassung, Mining-Pools, Stratum V2, Stranded Energy. Was ASICs wirklich tun.',
+  'energie':         'Bitcoin und Energie: Vergleich mit Goldabbau, Bankensystem und Netflix. Stranded Energy, Vulkan-Mining, Grid-Stabilisierung — Fakten statt Mythen.',
+  'netzwerk':        'Bitcoin-Netzwerk live: Hashrate, Nodes, Mempool, Difficulty. Wer angreifen will, scheitert an 51%-Kosten und Sybil-Resistenz.',
+  'nodes':           'Bitcoin-Node selbst betreiben: Raspberry Pi, ~CHF 200 Setup. Warum eigene Nodes Privacy schützen und das Netzwerk dezentral halten.',
+  'lightning':       'Lightning Network erklärt: Sofortzahlungen für Bruchteile eines Cents. Channel-Liquidität, LSP, Lightning Address, HTLC, Submarine Swaps.',
+  'layer2':          'Bitcoin Layer 2: Lightning, Liquid Sidechain, Statechains, Federated Mints. Wie Bitcoin skaliert ohne die Base Layer zu verändern.',
+  'onchain':         'On-Chain-Analyse: UTXO-Tracking, Whale-Watching, Realized Cap, MVRV. Wie man Bitcoin-Bewegungen liest — und was Chain-Analyse-Firmen sehen.',
+  'privacy':         'Bitcoin-Privacy: CoinJoin, UTXO-Hygiene, Coin Control, Tor, KYC-Risiken. Pseudonym ist nicht anonym — drei Privacy-Stufen erklärt.',
+  'entwicklung':     'Bitcoin-Entwicklung: BIPs, Soft/Hard Forks, Taproot/Schnorr 2021, Stratum V2. Wie das konservativste Geldsystem evolviert.',
+  'satoshi':         'Wer ist Satoshi Nakamoto? Identität, Geschichte, Hal Finney, Nick Szabo, Craig Wright. Warum die Anonymität ein Feature ist.',
+  'chronologie':     'Bitcoin-Chronologie 2008–2026: Whitepaper, Genesis-Block, Pizza Day, El Salvador, ETF-Genehmigung. Die wichtigsten Daten der Geschichte.',
+  'vergleich':       'Bitcoin vs. Krypto: ETH-Premine, Solana-Ausfälle, XRP-Zentralität, BCH-Verfall. Konkrete Altcoin-Analysen mit Daten statt Hype.',
+  'kultur':          'Bitcoin-Kultur: Memes, HODL, Cypherpunks, Meetups, Konferenzen. Die Community, die das härteste Geld der Welt schützt.',
+  'kaufen':          'Bitcoin sicher kaufen: Wallets, Self-Custody, Hardware-Wallet-Auswahl. Schritt-für-Schritt-Anleitung für Einsteiger und Fortgeschrittene.',
+  'dos':             'Bitcoin-Dos & Don\'ts: Verhaltensregeln für Besitzer. Was du tun musst — und was du auf keinen Fall machen darfst.',
+  'relai':           'Relai erklärt: die Schweizer Bitcoin-DCA-App. Self-Custody, Gebühren, Spread, Vergleich mit anderen Anbietern. Promo-Code BITSOLUTIONS.',
+  'bitcoin-schweiz': 'Bitcoin in der Schweiz: DCA in CHF, Schweizer Anbieter (Relai, Pocket, Bittr, Bitcoin Suisse), Steuern, 100-CHF-Plan, Hardware-Wallet-Walkthrough.',
+  'schweiz':         'Bitcoin im DACH-Raum: Steuerrecht in Schweiz/Deutschland/Österreich. Kapitalgewinn, Vermögenssteuer, Wertschriftenverzeichnis.',
+  'weltweit':        'Bitcoin-Adoption weltweit: El Salvador (BIS-Studie 2024 unter 12 %), Argentinien, Türkei, Nigeria. Wo Bitcoin als Schutz vor Inflation dient.',
+  'regulierung':     'Bitcoin-Regulierung: MiCA in EU, GwG in der Schweiz, US-Frameworks. Was du als Anleger und Trader rechtlich beachten musst.',
+  'sicherheit':      'Bitcoin-Sicherheit: Wallet-Stufen, Seed Phrase BIP39, Passphrase, Hardware-Wallet-Setup in 12 Schritten, Multisig 2-of-3, RBF/CPFP.',
+  'alltag':          'Bitcoin im Alltag: Wo bezahlen? BTC Map, Lightning, Bestätigungs-Tabelle 0/1/3/6 Confirmations. Wann ist eine Zahlung sicher genug?',
+  'lexikon':         'Bitcoin-Lexikon: 66 Fachbegriffe von ASIC bis xpub. Schnellsuche, kategorisiert nach Basics/Tech/Trading/Sicherheit. Auf Deutsch erklärt.',
+  'literatur':       'Bitcoin-Bücher: Saifedean Ammous, Lyn Alden, Roger Mangold, Gigi. Top-Picks von Einsteiger bis Fortgeschritten, mit Sprache und Preis.',
+  'medien':          'Bitcoin-Podcasts und YouTube-Kanäle: Blocktrainer, BeinharteWahrheit, What Bitcoin Did. Hörbücher und Videos zum Lernen unterwegs.',
+  'institutionen':   'Bitcoin-Institutionen: Spot-ETFs (BlackRock, Fidelity), Strategy/MicroStrategy, Corporate Treasuries. Wer institutionell hält und warum.',
+  'zyklen':          'Bitcoin-Zyklen: Halving alle 4 Jahre, Stock-to-Flow, Drawdowns, Bull-Bear-Phasen. Historische Muster und was sie für die Zukunft bedeuten.',
+  'cbdc':            'CBDCs vs Bitcoin: Über 130 Länder entwickeln digitales Zentralbankgeld. SNB-Position, programmierbares Geld, 7 Risiken konkret erklärt.',
+  'kritik':          'Bitcoin-Kritik & Mythen: 10 Kritikpunkte sachlich beantwortet (volatil, Energie, kompliziert) plus 10 verbreitete Mythen entkräftet mit Daten.',
+  'funfacts':        '80 Bitcoin-Fakten in 10 Kategorien: Pizza Day, Satoshi-Rätsel, Vulkan-Mining, ETF-Meilenstein, HODL-Geschichte. Wusstest du das?',
+  'news':            'Aktuelle Bitcoin-News aus deutschsprachigen RSS-Feeds: Blocktrainer, BTC-ECHO, Cointelegraph DACH. Live-Updates ohne Tracking.',
+  'feargreed':       'Bitcoin Fear & Greed Index live: aktuelle Marktstimmung visualisiert. Antizyklisches Investieren — gierig sein, wenn andere Angst haben.',
+  'social':          'Bitcoin auf X/Twitter: kuratierte Liste der wichtigsten deutschsprachigen und internationalen Bitcoin-Accounts.',
+  'stacking':        'Satoshi Stacking — die Bitcoin-Bildungs-Gamification: Quiz, versteckte Sats, DCA-Simulator, Achievements. Lernen mit Spass.',
+  'rechner':         'Bitcoin-Rechner: Sats↔CHF/EUR/USD, Halving-Countdown, Was-wäre-wenn-Rechner mit historischen Daten von 2014 bis heute.',
+  'pfade':           'Bitcoin-Lernpfade: 5 thematische Reisen — Bitcoin Basics, Self-Custody, Schweiz-Praxis, Technik tief, Bitcoin & Gesellschaft.',
+  'einstellungen':   'Satoshi-App Einstellungen: Statistiken, Update-Check, Fortschritt exportieren/importieren, Diagnose, Reset.',
+  'anleitung':       'Anleitung zur Satoshi-App: Module, Quizze, Achievements, Rabbit Hole, versteckte Sats. So nutzt du die App optimal.',
+  'changelog':       'Satoshi-App Changelog: Versions-Historie aller Releases mit neuen Features, Verbesserungen und Bugfixes.',
+  'impressum':       'Impressum, Spendenadresse mit SHA-256-Verifikation, Open-Source-Hinweis und Datenschutz der Satoshi-App.'
+};
+
 function updatePageMeta(key) {
   if (typeof MODULES === 'undefined') return;
   var mod = MODULES.find(function(m) { return m.key === key; });
   if (!mod) return;
+
+  // Title
   document.title = (key === 'home')
     ? '₿ Satoshi — Bitcoin Verstehen | Kostenlose Bitcoin-Bildung auf Deutsch'
     : mod.name + ' · ' + mod.desc + ' | Satoshi — Bitcoin Verstehen';
+
+  // Description: kuratiert pro Modul, sonst Fallback
+  var description = MODULE_SEO_DESCRIPTIONS[key] || (mod.name + ' — ' + mod.desc + '. Teil des Satoshi-Bitcoin-Bildungssystems auf Deutsch.');
+  // Description darf max ~160 Zeichen für Google
+  if (description.length > 160) description = description.slice(0, 157) + '…';
+
+  var descMeta = document.querySelector('meta[name="description"]');
+  if (descMeta) descMeta.setAttribute('content', description);
+  var ogDesc = document.querySelector('meta[property="og:description"]');
+  if (ogDesc) ogDesc.setAttribute('content', description);
+  var twDesc = document.querySelector('meta[name="twitter:description"]');
+  if (twDesc) twDesc.setAttribute('content', description);
+
+  // Title-Tags (OG + Twitter)
+  var ogTitle = document.querySelector('meta[property="og:title"]');
+  if (ogTitle) ogTitle.setAttribute('content', document.title);
+  var twTitle = document.querySelector('meta[name="twitter:title"]');
+  if (twTitle) twTitle.setAttribute('content', document.title);
+
+  // Canonical + OG-URL
   var canon = document.querySelector('link[rel="canonical"]');
   if (canon) canon.href = 'https://btc-klar.ch' + keyToPath(key);
   var ogUrl = document.querySelector('meta[property="og:url"]');
   if (ogUrl) ogUrl.setAttribute('content', 'https://btc-klar.ch' + keyToPath(key));
+
+  // BreadcrumbList JSON-LD aktualisieren — gibt Google-Crawlern Hinweis
+  // auf die Navigationsstruktur (zeigt im Suchergebnis als Breadcrumb).
+  var breadcrumbEl = document.getElementById('breadcrumbSchema');
+  if (breadcrumbEl) {
+    var items = [
+      { '@type': 'ListItem', position: 1, name: 'Satoshi', item: 'https://btc-klar.ch/' }
+    ];
+    if (key !== 'home') {
+      // Optional: Gruppe als Zwischenebene
+      var group = (typeof NAV_GROUPS !== 'undefined') ? NAV_GROUPS.find(function(g) { return g.keys.includes(key); }) : null;
+      if (group && group.id !== 'home') {
+        items.push({
+          '@type': 'ListItem',
+          position: 2,
+          name: group.label,
+          item: 'https://btc-klar.ch/' + (group.keys[0] || '')
+        });
+        items.push({
+          '@type': 'ListItem',
+          position: 3,
+          name: mod.name,
+          item: 'https://btc-klar.ch' + keyToPath(key)
+        });
+      } else {
+        items.push({
+          '@type': 'ListItem',
+          position: 2,
+          name: mod.name,
+          item: 'https://btc-klar.ch' + keyToPath(key)
+        });
+      }
+    }
+    var schema = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: items
+    };
+    try { breadcrumbEl.textContent = JSON.stringify(schema); } catch (e) {}
+  }
 }
 
 /* navigateTo accepts an opts object:
