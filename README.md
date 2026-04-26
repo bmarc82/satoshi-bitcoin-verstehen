@@ -85,38 +85,77 @@ npm run check    # Build-Check
 
 ## Projektstruktur
 
+Das Projekt trennt strikt zwischen **Deploy-Quelle** (`public/`) und **Dev-Werkzeugen** (alles andere). Auf den Webserver geht ausschließlich der Inhalt von `public/` — kein Build-Step, kein Bundler, keine versteckten Quellen.
+
 ```
 BITS-SATOSHI-APP/
-├── public/                        # ★ Deploy-Artifacts (Document-Root)
-│   ├── index.html                 # Haupt-App (HTML + CSS + JS, ~20'000 Zeilen)
+│
+├── public/                        # ★ DEPLOY-QUELLE (rsync-Target)
+│   │                              #   Genau und nur dieser Ordner geht
+│   │                              #   auf den Server. Alles hier ist
+│   │                              #   public unter https://btc-klar.ch/.
+│   ├── index.html                 # Haupt-App (HTML + CSS + JS, ~20'500 Zeilen)
 │   ├── sw.js                      # Service Worker
-│   ├── rabbit-hole.js             # Rabbit-Hole-Modul
+│   ├── rabbit-hole.js             # Rabbit-Hole-Modul (extern, defer)
 │   ├── manifest.json              # PWA-Manifest
 │   ├── sitemap.xml                # 45 URLs für SEO
 │   ├── robots.txt                 # Crawler-Steuerung
-│   ├── .htaccess                  # Apache-Fallback
-│   └── icons/
-│       ├── icon.svg
-│       └── donation-qr.svg        # SHA-256-verifiziert
-├── server/                        # nginx-Konfig
+│   ├── .htaccess                  # Apache-Config: HTTPS-Redirect, SPA-
+│   │                              #   Fallback, Pre-Compression-Rewrite,
+│   │                              #   Security-Header, Cache-Control
+│   ├── icons/
+│   │   ├── icon.svg               # PWA-Icon
+│   │   └── donation-qr.svg        # Spenden-QR (SHA-256-verifiziert)
+│   └── *.br / *.gz                # Pre-Compression-Output von
+│                                  #   scripts/compress.js — gitignored,
+│                                  #   wird bei jedem Deploy neu erzeugt.
+│                                  #   Apache liefert via .htaccess
+│                                  #   automatisch die Brotli- oder
+│                                  #   Gzip-Variante an passende Clients.
+│
+│   ────────────────── ab hier: NICHT deployt ──────────────────
+│
+├── docs/                          # Dokumentation (Open-Source-sichtbar)
+│   ├── DEPLOYMENT.md              # Deploy-Guide (Schritt für Schritt)
+│   ├── DEPLOY-NGINX.md            # nginx-Spezifika (Alternative zu Apache)
+│   ├── DOKUMENTATION.md           # Architektur, Module, Design-System
+│   ├── TECHNISCHE-DOKUMENTATION.md
+│   └── TODO.md                    # Roadmap + erledigte Arbeit
+│
+├── scripts/                       # Dev-Tools (Node, keine Runtime-Deps)
+│   ├── check.js                   # Build-Validation (Modul-Konsistenz,
+│   │                              #   Sitemap, SHA-256, CSP-Sanity)
+│   ├── compress.js                # Pre-Compression: erzeugt .br + .gz
+│   │                              #   für public/ (vor jedem Deploy)
+│   └── dev-server.js              # SPA-Dev-Server mit History-Fallback
+│
+├── server/                        # nginx-Configs (alternative Deploy-Targets)
 │   ├── nginx.conf
 │   └── nginx-security-headers.conf
-├── scripts/                       # Dev-Tools (laufen via Node)
-│   ├── check.js                   # Build-Validation
-│   └── dev-server.js              # SPA-Dev-Server
-├── docs/
-│   ├── DEPLOYMENT.md              # Deploy-Guide (Schritt für Schritt)
-│   ├── DEPLOY-NGINX.md            # nginx-Spezifika
-│   ├── DOKUMENTATION.md
-│   └── TECHNISCHE-DOKUMENTATION.md
-├── package.json                   # npm-Skripte
+│
+├── package.json                   # npm-Scripts (check, dev, compress)
 ├── README.md                      # diese Datei
-├── CONTRIBUTING.md
+├── CONTRIBUTING.md                # Beitrags-Richtlinien
 ├── LICENSE                        # MIT
-└── .gitignore
+└── .gitignore                     # ignoriert: node_modules/, dev-notes/,
+                                   #   content-sources/, lighthouse-*.json,
+                                   #   public/*.gz, public/*.br
 ```
 
-**Was wird deployt?** Nur `public/`. Der Rest ist Doku, Tools und Source.
+### Deploy- vs. Dev-Files auf einen Blick
+
+| Kategorie | Pfad | Auf Server? | Im Git? |
+|---|---|---|---|
+| App-Code + Config | `public/*` | ✅ ja | ✅ ja |
+| Pre-Compression-Output | `public/*.br`, `public/*.gz` | ✅ ja | ❌ nein (gitignored, build-time) |
+| Dokumentation | `docs/*` | ❌ nein | ✅ ja |
+| Build/Check/Dev-Tools | `scripts/*` | ❌ nein | ✅ ja |
+| Alternative Server-Configs | `server/*` | ❌ nein (außer auf nginx-Hosts) | ✅ ja |
+| Repo-Meta | `README.md`, `LICENSE`, `package.json`, `CONTRIBUTING.md` | ❌ nein | ✅ ja |
+| Inhalts-Drafts (Markdown) | `content-sources/*` | ❌ nein | ❌ nein (gitignored) |
+| Persönliche Notizen | `dev-notes/*` | ❌ nein | ❌ nein (gitignored) |
+
+**Faustregel:** Wenn es nicht in `public/` liegt, geht es auch nicht auf `btc-klar.ch`.
 
 ---
 

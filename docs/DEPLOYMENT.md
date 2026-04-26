@@ -1,38 +1,42 @@
 # Deployment-Guide — Satoshi PWA
 
-Dieses Dokument ist die **autoritative Anleitung** zum Deploy der App auf einen Linux-Server mit nginx. Alternative Varianten (Apache, statische Hoster) am Ende.
+Dieses Dokument ist die **autoritative Anleitung** zum Deploy der App. Primär dokumentiert ist das **Hostpoint-Setup mit Apache + .htaccess** (Live-Production), Linux-nginx-Variante als Alternative.
 
-## Repo-Struktur (Stand v3.3.0)
+## Deploy-Source-of-Truth: Was geht auf den Server, was nicht?
+
+**Auf den Server geht ausschließlich der Inhalt von `public/`.** Alles andere im Repo ist Source / Dev-Tools / Doku und bleibt lokal bzw. auf GitHub.
 
 ```
 BITS-SATOSHI-APP/
-├── public/                        # Document-Root für Webserver
-│   ├── index.html                 # Haupt-App (~20'000 Zeilen)
-│   ├── sw.js                      # Service Worker
-│   ├── rabbit-hole.js             # Rabbit-Hole-Modul
-│   ├── manifest.json              # PWA-Manifest
-│   ├── sitemap.xml                # 45 URLs für SEO
-│   ├── robots.txt                 # Crawler-Steuerung
-│   ├── .htaccess                  # Apache-Hoster-Fallback
-│   └── icons/
-│       ├── icon.svg               # App-Icon (PWA)
-│       └── donation-qr.svg        # QR-Code Spendenadresse (SHA-256-verifiziert)
-├── server/                        # nginx-Konfig (kopieren auf Server)
-│   ├── nginx.conf
-│   └── nginx-security-headers.conf
-├── scripts/                       # Lokale Dev-Tools
-│   ├── check.js                   # Build-Validation (HTML, Hashes, …)
-│   └── dev-server.js              # Lokaler HTTP-Server mit SPA-Fallback
-├── docs/
-│   ├── DEPLOYMENT.md              # diese Datei
-│   ├── DEPLOY-NGINX.md            # nginx-Spezifika (alt, ergänzend)
-│   ├── DOKUMENTATION.md           # Inhalts-/UX-Doku
-│   └── TECHNISCHE-DOKUMENTATION.md
-├── package.json                   # npm-Skripte (optional)
-├── README.md, LICENSE, CONTRIBUTING.md, .gitignore
+│
+├── public/                  ← rsync-Quelle (Document-Root)
+│                              Genau dieser Ordner geht auf den Server.
+│                              Nichts darüber hinaus.
+│
+├── docs/                    ← Doku (lokal + GitHub, nicht deployed)
+├── scripts/                 ← Dev-Tools (check.js, compress.js, dev-server.js)
+├── server/                  ← Alternative Server-Configs (nginx)
+├── package.json, README.md, …
 ```
 
-**Was wird deployt?** Nur `public/`. Alles andere ist Source/Doku/Tools.
+**Hauptregel:** wenn es nicht in `public/` liegt, geht es auch nicht auf btc-klar.ch — und braucht beim Deploy nichts. Alles in `public/` ist durch Apache/nginx unter `https://btc-klar.ch/<pfad>` direkt abrufbar.
+
+### Inhalt von `public/` (Deploy-Inventar)
+
+| Datei | Zweck | Kommentar |
+|---|---|---|
+| `index.html` | Haupt-App (~20'500 Zeilen, HTML+CSS+JS inline) | Single-Page-PWA |
+| `sw.js` | Service Worker | Cache-Versionierung steuert Updates |
+| `rabbit-hole.js` | Rabbit-Hole-Modul | Externes JS, lädt mit `defer` |
+| `manifest.json` | PWA-Manifest | App-Identität für «Zum Homescreen hinzufügen» |
+| `sitemap.xml` | SEO-Sitemap | 45 URLs, von Google Search Console gelesen |
+| `robots.txt` | Crawler-Steuerung | erlaubt alle Suchmaschinen |
+| `.htaccess` | Apache-Konfig | HTTPS-Redirect, SPA-Fallback, Pre-Compression-Rewrite, Security-Header, Cache-Control |
+| `icons/icon.svg` | PWA-Icon | |
+| `icons/donation-qr.svg` | Spenden-QR | SHA-256-verifiziert via `donationQrHash` |
+| `*.br`, `*.gz` (build) | Pre-Compression-Output | Gitignored, von `scripts/compress.js` erzeugt — Apache liefert sie via `.htaccess` automatisch an Brotli/Gzip-Clients aus |
+
+**Build-Outputs (`*.br`, `*.gz`)** sind nicht im Repo, werden aber **mit-deployt** — `scripts/compress.js` erzeugt sie vor dem rsync (siehe Workflow unten).
 
 ---
 
@@ -44,7 +48,29 @@ BITS-SATOSHI-APP/
 | nginx | ≥ 1.18 | für `try_files`, HTTP/2 |
 | Domain | btc-klar.ch (Beispiel) | A-Record auf Server-IP |
 | TLS | Let's Encrypt (Certbot) | für HTTPS-Redirect & HSTS |
-| Node.js (lokal) | ≥ 18 | nur für `check.js` und `dev-server.js` |
+| Node.js (lokal) | ≥ 18 | für `check.js`, `compress.js`, `dev-server.js` |
+
+---
+
+## Deploy-Workflow (Cheatsheet)
+
+```bash
+# 1) Validation
+node scripts/check.js
+
+# 2) Pre-Compression (Brotli + Gzip — spart ~80% HTML)
+node scripts/compress.js
+
+# 3) rsync nach Production
+rsync -avz --delete public/ user@server:/var/www/btc-klar.ch/
+
+# 4) Smoke-Test
+curl -I https://btc-klar.ch/
+curl -I -H "Accept-Encoding: br" https://btc-klar.ch/index.html | grep -i "content-encoding"
+# → erwartet: Content-Encoding: br
+```
+
+Oder als npm-Skript: `npm run deploy:check` führt Schritt 1+2 in einem Rutsch aus, danach manueller `rsync`.
 
 ---
 
