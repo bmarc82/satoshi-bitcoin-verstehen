@@ -2,7 +2,7 @@
  *  Cache-first for app shell, network-first for API data
  */
 
-const SHELL_CACHE  = 'satoshi-v28';
+const SHELL_CACHE  = 'satoshi-v29';
 const API_CACHE    = 'satoshi-api-v2';
 const API_TTL      = 5 * 60 * 1000;       // 5 minutes — serve cache without refresh
 const API_STALE    = 24 * 60 * 60 * 1000; // 24h hard limit for offline fallback
