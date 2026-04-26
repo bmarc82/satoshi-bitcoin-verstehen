@@ -9,12 +9,12 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="description" content="Bitcoin verstehen — 39 interaktive Module zu Blockchain, Mining, Lightning, Wallet-Sicherheit, On-Chain-Analyse und mehr. Kostenlos, offline-fähig, auf Deutsch.">
+  <meta name="description" content="Bitcoin verstehen — 44 interaktive Module zu Blockchain, Mining, Lightning, Wallet-Sicherheit, On-Chain-Analyse, Privacy und mehr. Kostenlos, offline-fähig, auf Deutsch.">
   <meta name="robots" content="index, follow">
   <meta name="keywords" content="Bitcoin, Blockchain, Kryptowährung, Bitcoin lernen, Bitcoin Schweiz, Satoshi, Mining, Lightning Network, Wallet, Bitcoin kaufen, Bitcoin Bildung, Halving, DCA">
   <link rel="canonical" href="https://btc-klar.ch/">
   <meta property="og:title" content="Satoshi — Bitcoin verstehen">
-  <meta property="og:description" content="39 interaktive Module: Blockchain, Mining, Lightning, Wallets, On-Chain-Analyse. Kostenlose Bitcoin-Bildung auf Deutsch.">
+  <meta property="og:description" content="44 interaktive Module: Blockchain, Mining, Lightning, Wallets, On-Chain-Analyse, Privacy. Kostenlose Bitcoin-Bildung auf Deutsch.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://btc-klar.ch/">
   <meta property="og:image" content="https://btc-klar.ch/icons/og-image.png">
@@ -25,7 +25,7 @@
   <meta property="og:site_name" content="Satoshi — Bitcoin Verstehen">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Satoshi — Bitcoin verstehen">
-  <meta name="twitter:description" content="39 interaktive Module: Blockchain, Mining, Lightning, Wallets, On-Chain-Analyse. Kostenlose Bitcoin-Bildung auf Deutsch.">
+  <meta name="twitter:description" content="44 interaktive Module: Blockchain, Mining, Lightning, Wallets, On-Chain-Analyse, Privacy. Kostenlose Bitcoin-Bildung auf Deutsch.">
   <meta name="twitter:image" content="https://btc-klar.ch/icons/og-image.png">
   <link rel="alternate" hreflang="de-CH" href="https://btc-klar.ch/">
   <link rel="alternate" hreflang="de-DE" href="https://btc-klar.ch/">
@@ -17947,7 +17947,6 @@ function fetchFearGreed() {
       if (!json || !json.data || !json.data.length) { console.warn('FNG: empty data'); return; }
       var current = json.data[0];
       var val = parseInt(current.value);
-      console.log('FNG loaded: value=' + val);
       updateFngGauge(val);
 
       var ts = new Date(parseInt(current.timestamp) * 1000);

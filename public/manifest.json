@@ -2,7 +2,7 @@
   "id": "/?source=pwa",
   "name": "Satoshi — Bitcoin Verstehen",
   "short_name": "Satoshi",
-  "description": "Umfassendes Bitcoin-Bildungssystem — 39 Module, Live-Daten, Offline-fähig",
+  "description": "Umfassendes Bitcoin-Bildungssystem — 44 Module, Live-Daten, Offline-fähig",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

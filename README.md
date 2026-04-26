@@ -2,7 +2,7 @@
 
 **Die interaktive Bitcoin-Bildungsplattform als Progressive Web App**
 
-49+ Module, Live-Daten, Gamification, Offline-fähig — vom Einsteiger zum Experten.
+44 Module, Live-Daten, Gamification, Offline-fähig — vom Einsteiger zum Experten.
 Kostenlos, werbefrei, Open Source.
 
 > **Live:** [btc-klar.ch](https://btc-klar.ch)
@@ -20,7 +20,7 @@ Satoshi ist eine umfassende Bitcoin-Bildungs-App, die als Single-Page PWA komple
 ## Features
 
 ### Bildung
-- **39 interaktive Module** — Geld, Inflation, Blockchain, Mining, Lightning, Wallets, Kryptographie, On-Chain, CBDCs, u.v.m.
+- **44 interaktive Module** — Geld, Inflation, Blockchain, Mining, Lightning, Wallets, Kryptographie, On-Chain, Privacy, CBDCs, u.v.m.
 - **Schwierigkeitsgrade** — Einsteiger → Fortgeschritten → Experte
 - **Bitcoin-Lexikon** — 65+ Fachbegriffe mit Live-Suche
 - **Literatur & Medien** — Bücher, Podcasts, Videos, Kanäle
