@@ -27,3 +27,6 @@ package-lock.json
 .tmp/
 .cache/
 build/
+
+# Lighthouse reports (lokale Audits, nicht im Repo)
+lighthouse-*.json
