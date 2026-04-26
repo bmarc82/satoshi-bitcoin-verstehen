@@ -19,6 +19,21 @@
   RewriteCond %{HTTP_HOST} !=localhost
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+  # ── Pre-compressed Brotli ────────────────────────────────────
+  # Wenn der Client Brotli akzeptiert UND eine .br-Variante existiert,
+  # diese ausliefern (vor dem SPA-Fallback prüfen, sonst greift der
+  # Fallback und liefert immer index.html aus). Wirkt als Fallback,
+  # falls mod_deflate auf dem Hoster nicht aktiv ist (z. B. Hostpoint
+  # liefert HTML manchmal ungziped trotz konfiguriertem mod_deflate).
+  RewriteCond %{HTTP:Accept-Encoding} br
+  RewriteCond %{REQUEST_FILENAME}.br -f
+  RewriteRule ^(.+)$ $1.br [QSA,L]
+
+  # ── Pre-compressed Gzip ──────────────────────────────────────
+  RewriteCond %{HTTP:Accept-Encoding} gzip
+  RewriteCond %{REQUEST_FILENAME}.gz -f
+  RewriteRule ^(.+)$ $1.gz [QSA,L]
+
   # ── SPA-Fallback ─────────────────────────────────────────────
   # History-API-Routing: /blockchain, /lightning etc. existieren als
   # echte Files NICHT — sie müssen index.html liefern, damit das
@@ -27,6 +42,62 @@
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_URI} !^/icons/
   RewriteRule ^ /index.html [L]
+</IfModule>
+
+# ── Pre-compressed Files: korrekte Header setzen ───────────
+# Apache muss wissen, dass .html.br = HTML mit Brotli-Encoding ist,
+# sonst liefert er Content-Type: application/octet-stream.
+<IfModule mod_headers.c>
+  <FilesMatch "\.html\.br$">
+    Header set Content-Encoding br
+    Header set Content-Type "text/html; charset=UTF-8"
+    Header append Vary Accept-Encoding
+  </FilesMatch>
+  <FilesMatch "\.html\.gz$">
+    Header set Content-Encoding gzip
+    Header set Content-Type "text/html; charset=UTF-8"
+    Header append Vary Accept-Encoding
+  </FilesMatch>
+  <FilesMatch "\.js\.br$">
+    Header set Content-Encoding br
+    Header set Content-Type "application/javascript; charset=UTF-8"
+    Header append Vary Accept-Encoding
+  </FilesMatch>
+  <FilesMatch "\.js\.gz$">
+    Header set Content-Encoding gzip
+    Header set Content-Type "application/javascript; charset=UTF-8"
+    Header append Vary Accept-Encoding
+  </FilesMatch>
+  <FilesMatch "\.css\.br$">
+    Header set Content-Encoding br
+    Header set Content-Type "text/css; charset=UTF-8"
+    Header append Vary Accept-Encoding
+  </FilesMatch>
+  <FilesMatch "\.css\.gz$">
+    Header set Content-Encoding gzip
+    Header set Content-Type "text/css; charset=UTF-8"
+    Header append Vary Accept-Encoding
+  </FilesMatch>
+  <FilesMatch "\.json\.br$">
+    Header set Content-Encoding br
+    Header set Content-Type "application/json; charset=UTF-8"
+    Header append Vary Accept-Encoding
+  </FilesMatch>
+  <FilesMatch "\.json\.gz$">
+    Header set Content-Encoding gzip
+    Header set Content-Type "application/json; charset=UTF-8"
+    Header append Vary Accept-Encoding
+  </FilesMatch>
+  <FilesMatch "\.svg\.br$">
+    Header set Content-Encoding br
+    Header set Content-Type "image/svg+xml; charset=UTF-8"
+    Header append Vary Accept-Encoding
+  </FilesMatch>
+  <FilesMatch "\.svg\.gz$">
+    Header set Content-Encoding gzip
+    Header set Content-Type "image/svg+xml; charset=UTF-8"
+    Header append Vary Accept-Encoding
+  </FilesMatch>
 </IfModule>
 
 # ── Security Headers ────────────────────────────────────────

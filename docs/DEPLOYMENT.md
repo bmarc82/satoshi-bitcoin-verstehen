@@ -115,14 +115,20 @@ sudo certbot --nginx -d btc-klar.ch -d www.btc-klar.ch
 # Certbot trägt SSL-Pfade automatisch in nginx ein
 ```
 
-### 4. App-Files deployen
+### 4. Pre-Compression + App-Files deployen
 
 ```bash
-# Vom lokalen Rechner aus
+# Erst .br/.gz-Varianten erzeugen (Brotli/Gzip-Fallback,
+# falls Hostpoint mod_deflate/mod_brotli nicht zur Laufzeit anwendet —
+# spart auf btc-klar.ch ~80% HTML-Übertragung)
+node scripts/compress.js
+
+# Dann sync — die .br/.gz-Files werden mitkopiert und via .htaccess
+# automatisch ausgeliefert (siehe public/.htaccess Rewrite-Regeln)
 rsync -avz --delete public/ user@server:/var/www/btc-klar.ch/
 ```
 
-Wichtig: `--delete` entfernt veraltete Files auf dem Server. Den Trailing-Slash hinter `public/` nicht vergessen — sonst landet ein `public/`-Subordner unter dem Webroot.
+Wichtig: `--delete` entfernt veraltete Files auf dem Server. Den Trailing-Slash hinter `public/` nicht vergessen — sonst landet ein `public/`-Subordner unter dem Webroot. Wer den Compress-Schritt vergisst, verliert die ~80% HTML-Brotli-Einsparung — die Site funktioniert aber trotzdem.
 
 ### 5. nginx-Konfig validieren + reloaden
 

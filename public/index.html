@@ -36,15 +36,12 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon.svg">
-  <!-- Resource Hints: preconnect+crossorigin für alle CORS-fetch()-APIs.
-       Spart 100–300 ms beim ersten Datenabruf (TLS+TCP läuft parallel zur
-       HTML-Parse-Phase). dns-prefetch als Fallback für ältere Browser. -->
+  <!-- Resource Hints: preconnect nur für die 2 wichtigsten Ursprünge
+       (Lighthouse warnt bei mehr als 4). dns-prefetch reicht für alles
+       andere — TLS-Setup läuft dann parallel zum DOM-Parse, kostet aber
+       keine Connection-Slots. -->
   <link rel="preconnect" href="https://api.coingecko.com" crossorigin>
   <link rel="preconnect" href="https://blockchain.info" crossorigin>
-  <link rel="preconnect" href="https://mempool.space" crossorigin>
-  <link rel="preconnect" href="https://cloud.umami.is" crossorigin>
-  <link rel="dns-prefetch" href="https://api.coingecko.com">
-  <link rel="dns-prefetch" href="https://blockchain.info">
   <link rel="dns-prefetch" href="https://mempool.space">
   <link rel="dns-prefetch" href="https://cloud.umami.is">
   <link rel="dns-prefetch" href="https://api.alternative.me">
@@ -15518,7 +15515,11 @@ function navigateTo(key, opts) {
     updateProgressTracker();
   }
 
-  if (key === 'home' || key === 'blockchain' || key === 'schweiz') fetchAllData();
+  // Home-relevante Screens brauchen nur Preis + Blockhöhe (2 API-Calls).
+  // Vollständiges fetchAllData (mempool/fees/diff/lightning) erst bei
+  // /netzwerk — spart auf mobilen Verbindungen ~6 parallele Requests.
+  if (key === 'home' || key === 'blockchain' || key === 'schweiz') fetchHomeData();
+  if (key === 'netzwerk' || key === 'lightning') fetchAllData();
   if (key === 'home' && typeof renderLearningPath === 'function') renderLearningPath();
   if (key === 'feargreed') fetchFearGreed();
   if (key === 'social') loadTwitterWidget();
@@ -17416,6 +17417,7 @@ function animateCounter(el, target, prefix, suffix) {
 // ╚══════════════════════════════════════════╝
 
 var lastFetch = 0;
+var lastHomeFetch = 0;
 var FETCH_INTERVAL = 60000;
 var isFetching = false;
 
@@ -17426,6 +17428,44 @@ function fetchWithTimeout(url, options, ms) {
   var timer = setTimeout(function() { controller.abort(); }, ms);
   var opts = Object.assign({}, options || {}, { signal: controller.signal });
   return fetch(url, opts).finally(function() { clearTimeout(timer); });
+}
+
+/* Lightweight Home-Fetch: nur die 2 APIs, die für die Hero-Stats
+ * (BTC-Preis, Blockhöhe, Hashrate) gebraucht werden. Spart bei Erst-
+ * Aufruf 6 Mempool-Calls — kritischer LCP-Hebel auf mobilen Verbindungen.
+ * Vollständiges fetchAllData() läuft lazy, sobald /netzwerk besucht wird.
+ */
+async function fetchHomeData() {
+  if (isFetching) return;
+  if (Date.now() - lastHomeFetch < FETCH_INTERVAL - 1000) return;
+  lastHomeFetch = Date.now();
+  var results = await Promise.all([
+    fetchWithFallback('https://api.blockchain.info/stats', 'btc_stats'),
+    fetchWithFallback('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd,eur&include_24hr_change=true', 'btc_price')
+  ]);
+  var stats = results[0], cg = results[1];
+  try {
+    if (stats && stats.n_blocks_total) {
+      animateCounter(document.getElementById('blockHeight'), stats.n_blocks_total, '', '');
+      animateCounter(document.getElementById('liveBlockHeight'), stats.n_blocks_total, '', '');
+    }
+    if (stats && stats.hash_rate) {
+      var hr = (stats.hash_rate / 1e9).toFixed(1);
+      setText('hashRate', hr);
+      setText('liveHashRate', hr);
+    }
+  } catch(e) { console.warn('home parse error:', e); }
+  try {
+    if (cg && cg.bitcoin) {
+      animateCounter(document.getElementById('btcPrice'), Math.round(cg.bitcoin.usd), '$', '');
+      var change = cg.bitcoin.usd_24h_change;
+      var changeEl = document.getElementById('btcChange');
+      if (changeEl) {
+        changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(1) + '%';
+        changeEl.style.color = change >= 0 ? 'var(--green)' : 'var(--red)';
+      }
+    }
+  } catch(e) { console.warn('home price error:', e); }
 }
 
 async function fetchAllData() {
@@ -20224,17 +20264,32 @@ function resetAccordionOnNavigate(key) {
     updatePageMeta('home');
     try { history.replaceState({ key: 'home' }, '', '/'); } catch (e) {}
   }
-  // Fetch data with retry safety — errors must never break the interval
-  fetchAllData().catch(function(e) { console.warn('Initial fetch error:', e); });
-  fetchFearGreed();
-  var _fetchInterval = setInterval(function() {
-    if (document.visibilityState === 'hidden') return;
-    fetchAllData().catch(function(e) { console.warn('Interval fetch error:', e); });
-  }, FETCH_INTERVAL);
-  var _fngInterval = setInterval(function() {
-    if (document.visibilityState === 'hidden') return;
-    fetchFearGreed();
-  }, 120000);
+  // Daten-Fetch erst NACH First-Paint — verhindert dass 8 parallele
+  // API-Calls die LCP/FCP-Phase blockieren. requestIdleCallback wartet
+  // bis der Hauptthread Luft hat. Fallback: 200 ms setTimeout.
+  // Interval-Fetch ist screen-aware: auf Home reichen die 2 leichten Calls,
+  // auf /netzwerk werden die schweren Mempool-/Lightning-Daten geholt.
+  function _kickOffData() {
+    fetchHomeData().catch(function(e) { console.warn('Initial fetch error:', e); });
+    setInterval(function() {
+      if (document.visibilityState === 'hidden') return;
+      var s = currentScreen;
+      if (s === 'netzwerk' || s === 'lightning') {
+        fetchAllData().catch(function(e) { console.warn('Interval fetch error:', e); });
+      } else {
+        fetchHomeData().catch(function(e) { console.warn('Interval fetch error:', e); });
+      }
+    }, FETCH_INTERVAL);
+    setInterval(function() {
+      if (document.visibilityState === 'hidden') return;
+      if (currentScreen === 'feargreed') fetchFearGreed();
+    }, 120000);
+  }
+  if (window.requestIdleCallback) {
+    requestIdleCallback(_kickOffData, { timeout: 1500 });
+  } else {
+    setTimeout(_kickOffData, 200);
+  }
 
   // Easter Egg: HODL Typo — type "hodl" anywhere (Referenz zum legendären BitcoinTalk-Post vom 18. Dez. 2013)
   var hodlBuffer = '';

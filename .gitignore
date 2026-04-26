@@ -30,3 +30,11 @@ build/
 
 # Lighthouse reports (lokale Audits, nicht im Repo)
 lighthouse-*.json
+
+# Pre-Compression-Output: wird von scripts/compress.js erzeugt und
+# beim Deploy nach public/ rsync'd. Nicht im Repo halten — die Brotli-
+# Outputs ändern sich bei jedem index.html-Edit (großer Diff-Lärm).
+public/*.gz
+public/*.br
+public/icons/*.gz
+public/icons/*.br
