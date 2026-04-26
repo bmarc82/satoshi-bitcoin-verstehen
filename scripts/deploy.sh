@@ -39,11 +39,24 @@ node scripts/compress.js
 echo
 echo "→ 3/4 Upload nach $SSH_HOST:$HOSTPOINT_DOCROOT"
 
+# Brotli-Files (.br) auf Hostpoint NICHT hochladen.
+# Grund: Hostpoint-Edge-nginx hat einen Bug, bei dem .br-Files mit
+# Chrome-typischen Multi-Encoding-Headern (`Accept-Encoding: gzip, br`)
+# den Header `Content-Encoding: br` erhalten, der Body aber zusätzlich
+# durch gzip läuft → ERR_CONTENT_DECODING_FAILED. Dokumentiert
+# 2026-04-26. Falls Hostpoint den Bug fixt: HOSTPOINT_BROTLI=on setzen.
+HOSTPOINT_BROTLI="${HOSTPOINT_BROTLI:-off}"
+EXCLUDES=(--exclude='.DS_Store' --exclude='Thumbs.db')
+TAR_EXCLUDES=(--exclude=.DS_Store --exclude=Thumbs.db)
+if [ "$HOSTPOINT_BROTLI" != "on" ]; then
+  EXCLUDES+=(--exclude='*.br')
+  TAR_EXCLUDES+=(--exclude=*.br)
+  echo "  ℹ Brotli-Skip aktiv (Hostpoint-Edge-Bug). gzip-Static reicht."
+fi
+
 if command -v rsync >/dev/null 2>&1; then
   # Bevorzugter Pfad: rsync mit Delta + --delete
-  rsync -avz --delete \
-    --exclude='.DS_Store' \
-    --exclude='Thumbs.db' \
+  rsync -avz --delete "${EXCLUDES[@]}" \
     "$LOCAL_PUBLIC/" "$SSH_HOST:$HOSTPOINT_DOCROOT/"
 else
   # Fallback: tar | ssh — atomar, kein rsync nötig
@@ -56,7 +69,7 @@ else
   echo "  Staging: $STAGING"
 
   # Tarball pipen, auf Server entpacken
-  tar -C "$LOCAL_PUBLIC" -cf - . \
+  tar -C "$LOCAL_PUBLIC" "${TAR_EXCLUDES[@]}" -cf - . \
     | ssh "$SSH_HOST" "mkdir -p '$STAGING' && tar -C '$STAGING' -xf -"
 
   # Atomarer Tausch:
@@ -85,22 +98,37 @@ if [ "$HTTP_STATUS" != "200" ]; then
 fi
 echo "  ✓ HTTP 200"
 
-echo "  Brotli-Decode-Test ..."
+echo "  Encoding-Decode-Test (mit Chrome-Headern) ..."
 # tmp-File im Repo-Root, weil Node unter Windows /tmp nicht mit POSIX-Path
 # auflöst (interpretiert es als C:\tmp\...). Lokal arbeiten ist portabel.
 TMPFILE=".tmp-smoke-$$.bin"
-trap 'rm -f "$TMPFILE"' EXIT
-curl -s -H 'Accept-Encoding: br' https://btc-klar.ch/ -o "$TMPFILE"
-BR_BYTES="$(node -e "console.log(require('fs').readFileSync('$TMPFILE').slice(0,3).toString('hex'))")"
-if [ "$BR_BYTES" = "1f8b08" ]; then
-  echo "  ✗ Server sendet Content-Encoding: br aber Body ist gzip — Doppel-Encoding-Bug!"
-  echo "    Lösung: bei Hostpoint die .br-Files entfernen oder Edge-Compression neu konfigurieren."
-  exit 1
-fi
+TMPHDRS=".tmp-smoke-$$.hdrs"
+trap 'rm -f "$TMPFILE" "$TMPHDRS"' EXIT
+curl -s \
+  -H 'Accept-Encoding: gzip, deflate, br, zstd' \
+  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/121.0' \
+  -D "$TMPHDRS" -o "$TMPFILE" https://btc-klar.ch/
+ENC="$(grep -i '^content-encoding:' "$TMPHDRS" | tr -d '\r' | awk '{print tolower($2)}')"
 node -e "
-  try { require('zlib').brotliDecompressSync(require('fs').readFileSync('$TMPFILE')); console.log('  ✓ Brotli antwortet korrekt');\
-    } catch (e) { console.error('  ✗ Brotli-Decode failed:', e.message); process.exit(1); }
-"
+const fs = require('fs'), zlib = require('zlib');
+const buf = fs.readFileSync('$TMPFILE');
+const enc = '$ENC';
+const tryDecode = enc === 'br'   ? () => zlib.brotliDecompressSync(buf) :
+                  enc === 'gzip' ? () => zlib.gunzipSync(buf) :
+                                   () => buf;
+try {
+  const decoded = tryDecode();
+  if (!decoded.toString('utf8', 0, 1000).includes('<!DOCTYPE html>')) {
+    console.error('  ✗ Decoded body sieht nicht nach HTML aus — Encoding-Bug?'); process.exit(1);
+  }
+  console.log('  ✓ Encoding=' + (enc || 'identity') + ', Decode OK,', decoded.length, 'bytes');
+} catch(e) {
+  console.error('  ✗ Decode failed (Encoding=' + enc + '): ' + e.message);
+  console.error('    Body-Magic-Bytes:', buf.slice(0,3).toString('hex'));
+  console.error('    Doppel-Encoding-Bug? Wenn Server Content-Encoding: br sagt aber Body 1f8b08 (gzip)');
+  console.error('    hat ist es der Hostpoint-Edge-Bug — .br-Files vom Server entfernen.');
+  process.exit(1);
+}"
 
 echo
 echo "✓ Deploy abgeschlossen."
