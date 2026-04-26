@@ -36,11 +36,20 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon.svg">
-  <link rel="preconnect" href="https://api.coingecko.com">
+  <!-- Resource Hints: preconnect+crossorigin für alle CORS-fetch()-APIs.
+       Spart 100–300 ms beim ersten Datenabruf (TLS+TCP läuft parallel zur
+       HTML-Parse-Phase). dns-prefetch als Fallback für ältere Browser. -->
+  <link rel="preconnect" href="https://api.coingecko.com" crossorigin>
+  <link rel="preconnect" href="https://blockchain.info" crossorigin>
+  <link rel="preconnect" href="https://mempool.space" crossorigin>
+  <link rel="preconnect" href="https://cloud.umami.is" crossorigin>
   <link rel="dns-prefetch" href="https://api.coingecko.com">
-  <link rel="dns-prefetch" href="https://api.blockchain.info">
+  <link rel="dns-prefetch" href="https://blockchain.info">
   <link rel="dns-prefetch" href="https://mempool.space">
+  <link rel="dns-prefetch" href="https://cloud.umami.is">
   <link rel="dns-prefetch" href="https://api.alternative.me">
+  <link rel="dns-prefetch" href="https://platform.twitter.com">
+  <link rel="dns-prefetch" href="https://www.youtube.com">
   <!-- JSON-LD #1: WebApplication (App-Identität) -->
   <script type="application/ld+json">
   {
@@ -15484,6 +15493,10 @@ function updatePageMeta(key) {
  */
 function navigateTo(key, opts) {
   opts = opts || {};
+  // Flush deferred-init queue (Phase B aus init()) — verhindert leere
+  // Screens, falls der User wegnavigiert bevor die Idle-Queue durch ist.
+  // Idempotent: nach dem ersten Aufruf ein No-Op.
+  if (typeof window.flushDeferredInit === 'function') window.flushDeferredInit();
   closeSubnav();
   _getScreens().forEach(s => s.classList.remove('active'));
   const screenEl = document.getElementById('screen-' + key);
@@ -20119,6 +20132,9 @@ function resetAccordionOnNavigate(key) {
 // ╚══════════════════════════════════════════╝
 
 (function init() {
+  // ── Phase A: für Home + initiales Routing zwingend ─────────────
+  // Alles was sichtbar ist oder die Routing-Logik braucht, läuft
+  // synchron. Spätere Phasen rendern nicht-sichtbare Modulinhalte.
   trackAppOpen();
   checkStreakMilestones();
   renderNav();
@@ -20126,39 +20142,64 @@ function resetAccordionOnNavigate(key) {
   renderRandomQuote();
   renderHomeBookTip();
   updateProgressTracker();
-  renderTimeline(GELD_TIMELINE, 'geldTimeline');
-  renderTimeline(SATOSHI_TIMELINE, 'satoshiTimeline');
-  renderTimeline(CYPHERPUNK_TIMELINE, 'cypherpunkTimeline');
-  renderTimeline(SCHWEIZ_TIMELINE, 'schweizTimeline');
-  renderTimeline(CHF_TIMELINE, 'chfTimeline');
-  renderTimeline(ELSALVADOR_TIMELINE, 'elsalvadorTimeline');
-  renderWhitepaper();
-  renderLexikon();
-  renderBooks();
-  renderAudiobooks();
-  renderYouTube();
-  renderBlogs();
-  renderNewsFeedList();
-  renderTweets();
-  renderXAccounts();
-  renderDosDonts();
-  initHiddenSats();
-  startSatProximity();
-  updateSatHintBadge('home');
-  initInlineQuizzes();
-  accordionifySections();
   renderLearningPath();
   renderModuleViewToggle();
   showModuleView('path');
-  addDifficultyBadges();
-  addReadingTimeBadges();
-  addContinueButtons();
-  initChecklists();
   renderRecentModules();
   renderStreakBadge();
   renderPathCards();
   renderActivePathBanner();
+  updateSatHintBadge('home');
   observeAnimations();
+
+  // Phase B (idle): Modulinhalte für Screens, die nicht Home sind.
+  // Werden in einer Queue gesammelt und im Idle-Callback abgearbeitet
+  // (Fallback setTimeout für Safari iOS < 16). Wenn der User bereits
+  // einen Deep-Link öffnet oder navigiert, flusht navigateTo() die
+  // Queue synchron — leere Screens sind ausgeschlossen.
+  window._deferredInitQueue = [
+    function() { renderTimeline(GELD_TIMELINE, 'geldTimeline'); },
+    function() { renderTimeline(SATOSHI_TIMELINE, 'satoshiTimeline'); },
+    function() { renderTimeline(CYPHERPUNK_TIMELINE, 'cypherpunkTimeline'); },
+    function() { renderTimeline(SCHWEIZ_TIMELINE, 'schweizTimeline'); },
+    function() { renderTimeline(CHF_TIMELINE, 'chfTimeline'); },
+    function() { renderTimeline(ELSALVADOR_TIMELINE, 'elsalvadorTimeline'); },
+    function() { renderWhitepaper(); },
+    function() { renderLexikon(); },
+    function() { renderBooks(); },
+    function() { renderAudiobooks(); },
+    function() { renderYouTube(); },
+    function() { renderBlogs(); },
+    function() { renderNewsFeedList(); },
+    function() { renderTweets(); },
+    function() { renderXAccounts(); },
+    function() { renderDosDonts(); },
+    function() { initHiddenSats(); startSatProximity(); },
+    function() { initInlineQuizzes(); },
+    function() { accordionifySections(); },
+    function() { addDifficultyBadges(); addReadingTimeBadges(); },
+    function() { addContinueButtons(); },
+    function() { initChecklists(); }
+  ];
+  window.flushDeferredInit = function() {
+    var q = window._deferredInitQueue;
+    if (!q || !q.length) return;
+    while (q.length) {
+      try { q.shift()(); } catch (e) { console.warn('Deferred init error:', e); }
+    }
+  };
+  (function pumpIdle() {
+    var q = window._deferredInitQueue;
+    if (!q || !q.length) return;
+    var ric = window.requestIdleCallback || function(cb) { return setTimeout(cb, 1); };
+    ric(function(deadline) {
+      while (q.length && (!deadline || !deadline.didTimeout)
+             && (!deadline || deadline.timeRemaining && deadline.timeRemaining() > 4)) {
+        try { q.shift()(); } catch (e) { console.warn('Deferred init error:', e); }
+      }
+      pumpIdle();
+    }, { timeout: 500 });
+  })();
 
   // Achievement-Check beim App-Start — auch wenn User auf Home bleibt,
   // sollen Streak-/Sat-Achievements geprüft werden, nicht erst nach
@@ -20309,7 +20350,7 @@ function resetAccordionOnNavigate(key) {
         '<div style="background:rgba(247,183,49,0.06);border:1px solid rgba(247,183,49,0.2);border-radius:var(--radius-sm);padding:16px;margin:0 auto;max-width:380px">' +
           '<div style="font-size:var(--text-xs);color:var(--muted);margin-bottom:10px" title="Adresse wurde clientseitig per SHA-256 gegen den im Code hinterlegten Hash geprüft.">Bitcoin-Adresse · <span style="color:var(--green)">SHA-256 lokal verifiziert ✓</span></div>' +
           '<div id="donationQrWrap" style="display:flex;justify-content:center;margin-bottom:12px">' +
-            '<img alt="QR-Code für Bitcoin-Spendenadresse" width="180" height="180" style="background:#fff;padding:8px;border-radius:8px;display:block" data-qr-pending="1">' +
+            '<img alt="QR-Code für Bitcoin-Spendenadresse" width="180" height="180" loading="lazy" decoding="async" style="background:#fff;padding:8px;border-radius:8px;display:block" data-qr-pending="1">' +
           '</div>' +
           '<code id="donationAddrText" style="display:block;word-break:break-all;font-family:var(--font-mono);font-size:0.78rem;color:var(--gold);background:rgba(0,0,0,0.3);padding:10px 12px;border-radius:6px;user-select:all;letter-spacing:0.3px;cursor:pointer" title="Klicke zum Kopieren">' +
             escapeHtml(DONATION_ADDR) +
@@ -20433,7 +20474,7 @@ function resetAccordionOnNavigate(key) {
   updateOfflineStatus();
 })();
 </script>
-<script src="rabbit-hole.js"></script>
+<script src="rabbit-hole.js" defer></script>
 
 </body>
 </html>
