@@ -15992,6 +15992,13 @@ function _applyModuleFilters() {
 
 function filterBySearch(term) {
   _currentSearchTerm = term || '';
+  // Wenn der User tippt, automatisch in die Grid-Ansicht wechseln —
+  // sonst filtert die Suche unsichtbare Module im Lernpfad-View.
+  if (_currentSearchTerm.length > 0 && _moduleView !== 'grid'
+      && typeof showModuleView === 'function') {
+    var gridChip = document.querySelector('#moduleViewToggle .chip[data-view="grid"]');
+    showModuleView('grid', gridChip || null);
+  }
   _applyModuleFilters();
 }
 
@@ -17729,14 +17736,29 @@ async function fetchHomeData() {
     }
   } catch(e) { console.warn('home parse error:', e); }
   try {
+    var changeEl = document.getElementById('btcChange');
     if (cg && cg.bitcoin) {
       animateCounter(document.getElementById('btcPrice'), Math.round(cg.bitcoin.usd), '$', '');
       var change = cg.bitcoin.usd_24h_change;
-      var changeEl = document.getElementById('btcChange');
-      if (changeEl) {
+      if (changeEl && typeof change === 'number') {
+        changeEl.classList.remove('is-loading');
         changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(1) + '%';
         changeEl.style.color = change >= 0 ? 'var(--green)' : 'var(--red)';
+      } else if (changeEl) {
+        changeEl.classList.remove('is-loading');
+        changeEl.textContent = '—';
       }
+    } else if (stats && stats.market_price_usd) {
+      // CoinGecko down → Preis aus blockchain.info statt nichts.
+      animateCounter(document.getElementById('btcPrice'), Math.round(stats.market_price_usd), '$', '');
+      if (changeEl) {
+        changeEl.classList.remove('is-loading');
+        changeEl.textContent = '—';
+      }
+    } else if (changeEl) {
+      // Beide APIs aus → wenigstens Skelett entfernen.
+      changeEl.classList.remove('is-loading');
+      changeEl.textContent = '—';
     }
   } catch(e) { console.warn('home price error:', e); }
 }
@@ -17809,18 +17831,26 @@ async function fetchAllData() {
 
   // CoinGecko (primary price source)
   try {
+    var changeEl = document.getElementById('btcChange');
     if (cg && cg.bitcoin) {
       var priceVal = Math.round(cg.bitcoin.usd);
       animateCounter(document.getElementById('btcPrice'), priceVal, '$', '');
       var change = cg.bitcoin.usd_24h_change;
-      var changeEl = document.getElementById('btcChange');
-      if (changeEl) {
+      if (changeEl && typeof change === 'number') {
+        changeEl.classList.remove('is-loading');
         changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(1) + '%';
         changeEl.style.color = change >= 0 ? 'var(--green)' : 'var(--red)';
+      } else if (changeEl) {
+        changeEl.classList.remove('is-loading');
+        changeEl.textContent = '—';
       }
     } else if (stats && stats.market_price_usd) {
-      // Fallback: use blockchain.info price
+      // Fallback: use blockchain.info price (kein 24h-Change verfügbar)
       animateCounter(document.getElementById('btcPrice'), Math.round(stats.market_price_usd), '$', '');
+      if (changeEl) {
+        changeEl.classList.remove('is-loading');
+        changeEl.textContent = '—';
+      }
     }
   } catch(e) { console.warn('Price parse error:', e); }
 
